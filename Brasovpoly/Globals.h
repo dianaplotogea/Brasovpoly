@@ -1,0 +1,59 @@
+#ifndef GLOBALS_H
+#define GLOBALS_H
+
+#include <SFML/Graphics.hpp>
+
+sf::Font* getGlobalFont(); // A getter is needed in order to put it as a default value in the constructor of the Button. It has to be declared here, don't move it do
+
+#include "UI/UIContainer.h"
+#include <vector>
+#include "Player.h"
+#include "UI/UISprite.h"
+#include "UI/UIRectangleShape.h"
+#include "Gameplay/Location.h"
+#include "Gameplay/District.h"
+
+extern int windowWidth;
+extern int windowHeight;
+extern int buttonWidth;
+extern int buttonHeight;
+extern int backButtonPosition;
+
+extern bool shouldStartGameButtonBeActivated;
+
+extern UIContainer playerCountSelectionMenu;
+extern UIContainer playerSetupMenu;
+extern UIContainer playerColorSelectorMenu;
+extern UIContainer inGameScene;
+
+extern sf::Font font;
+
+extern Button* closeButton;
+extern Button* startGameButton;
+extern Button* rollDiceButton;
+extern Button* buyPropertyButton;
+extern Button* nextButton;
+
+extern UISprite* closeButtonUISpritePlayerCountSelectionMenu;
+
+extern std::vector<Player*> players;
+
+extern std::vector<District> districts;
+
+extern std::vector<Location*> locations;
+
+extern std::vector<UIElement*> inGameSceneUIElementsThatMustBeDeleted;
+
+extern UIContainer emptyUIContainer; // It is needed for UI elements that are present in more than one state of the game
+
+enum class GameState
+{
+    PlayerCountSelection,
+    PlayerSetup,
+    PlayerColorSelection,
+    InGame
+};
+
+extern GameState currentState;
+
+#endif
