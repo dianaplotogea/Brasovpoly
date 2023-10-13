@@ -23,6 +23,7 @@ public:
     UIText* playerIndexText;
     UIText* playerNameText;
     UIText* playerMoneyAmountText;
+    UIText* playerProfitAmountText;
 
     UIRectangleShape* uiRectangleShapePlayer;
 
@@ -34,9 +35,8 @@ public:
     
     Button* colorButton;
 
-    Player(int countParam, UIText* playerIndexTextParam, InputField* inputFieldParam, Button* colorButtonParam, sf::Color colorParam = sf::Color::Black ) 
+    Player(int countParam, UIText* playerIndexTextParam, InputField* inputFieldParam, Button* colorButtonParam, sf::Color colorParam) 
     : count(countParam), playerIndexText(playerIndexTextParam), inputField(inputFieldParam), colorButton(colorButtonParam), color(colorParam) {};
- 
 
 };
 

@@ -33,7 +33,9 @@ void createPlayerCountSelectionMenu()
             buttonHeight,
             &font,
             std::to_string(i),
-            sf::Color::Green
+            buttonColor,
+            buttonBorderThickness,
+            buttonBorderColor
         );
         playerCountSelectionButtons.push_back(numberOfPlayersSelectionButton);
     }

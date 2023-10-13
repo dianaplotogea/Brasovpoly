@@ -17,6 +17,7 @@ extern int windowWidth;
 extern int windowHeight;
 extern int buttonWidth;
 extern int buttonHeight;
+extern int buttonBorderThickness;
 extern int backButtonPosition;
 
 extern bool shouldStartGameButtonBeActivated;
@@ -28,11 +29,16 @@ extern UIContainer inGameScene;
 
 extern sf::Font font;
 
+extern sf::Color buttonColor;
+extern sf::Color buttonBorderColor;
+
 extern Button* closeButton;
 extern Button* startGameButton;
 extern Button* rollDiceButton;
 extern Button* buyPropertyButton;
 extern Button* nextButton;
+
+extern UIText* rollDiceResultText;
 
 extern UISprite* closeButtonUISpritePlayerCountSelectionMenu;
 
@@ -42,9 +48,13 @@ extern std::vector<District> districts;
 
 extern std::vector<Location*> locations;
 
+extern std::vector<sf::Color> colors;
+
 extern std::vector<UIElement*> inGameSceneUIElementsThatMustBeDeleted;
 
 extern UIContainer emptyUIContainer; // It is needed for UI elements that are present in more than one state of the game
+
+extern std::vector<UIRectangleShape*> propertyColorSquares;
 
 enum class GameState
 {

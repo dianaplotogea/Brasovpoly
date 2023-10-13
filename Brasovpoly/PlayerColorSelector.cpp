@@ -14,29 +14,17 @@ int colorSelectorButtonPositionX = (windowWidth - numberOfColumns * colorSelecto
 int colorSelectorButtonInitialPositionY = 100;
 int colorSelectorButtonPositionY = 100;
 
-std::vector<sf::Color> colors =
-{
-    {sf::Color::White},
-    {sf::Color::Red},
-    {sf::Color::Green},
-    {sf::Color::Blue},
-    {sf::Color::Yellow},
-    {sf::Color::Magenta},
-    {sf::Color::Cyan},
-    {255, 165, 0}, // Orange
-    {153, 101, 21}  // Brown
-};
-
-std::map<Button*, sf::Color> colorSelectorButtonsAndColors;
+std::vector<Button*> colorSelectorButtons;
 
 UIText* playerColorSelectorText;
 
 Player* currentPlayer;
 
+Button* previousColorSelectorButton = nullptr;
+
 void createColorSelectorMenu()
 {
     playerColorSelectorText = new UIText(playerColorSelectorMenu);
-
     int numberOfColors = colors.size();
     while(numberOfColors !=0)
     {
@@ -48,7 +36,7 @@ void createColorSelectorMenu()
         for(int i=0;i<numberOfColumns;i++)
         {
             Button* colorSelectorButton = new Button(playerColorSelectorMenu, currentColorSelectorButtonPositionX, colorSelectorButtonInitialPositionY + colorSelectorButtonPositionY, colorSelectorButtonWidth, colorSelectorButtonHeight, &font, "", colors[numberOfColors-1]);
-            colorSelectorButtonsAndColors.insert(std::make_pair(colorSelectorButton, colors[numberOfColors-1]));
+            colorSelectorButtons.push_back(colorSelectorButton);
             currentColorSelectorButtonPositionX += distanceBetweenElements + colorSelectorButtonWidth;
             numberOfColors--;
         }
@@ -72,20 +60,37 @@ void colorButtonEventHandler(sf::RenderWindow& window)
             sf::FloatRect playerColorSelectorTextRect = playerColorSelectorText->getLocalBounds();
             playerColorSelectorText->setOrigin(playerColorSelectorTextRect.width/2.0f, playerColorSelectorTextRect.height/2.0f);
             currentPlayer = player;
+            for(Button* button : colorSelectorButtons)
+            {
+                if(player->color == button->getColor())
+                {
+                    button->setBorder(5, sf::Color::White);
+                    previousColorSelectorButton = button;
+                }
+                else
+                {
+                    button->setBorder(0, sf::Color::White);   
+                }
+            }
         }
     }
 }
 
 void colorSelectorButtonEventHandler(sf::RenderWindow& window)
 {
-    for(const auto& colorSelectorButtonsAndColorsPair : colorSelectorButtonsAndColors)
+    for(Button* colorSelectorButton : colorSelectorButtons)
     {
-        if(colorSelectorButtonsAndColorsPair.first->isMouseOver(window))
+        if(colorSelectorButton->isMouseOver(window))
         {
-            currentPlayer->color = colorSelectorButtonsAndColorsPair.second;
-            currentPlayer->playerIndexText->setColor(colorSelectorButtonsAndColorsPair.second);
-            std::cout << "Color set for " << currentPlayer->count << std::endl; 
+            currentPlayer->color = colorSelectorButton->getColor();
+            currentPlayer->playerIndexText->setColor(colorSelectorButton->getColor()); 
             activateStartGameButtonIfAllPlayersAreSet();
+            colorSelectorButton->setBorder(5, sf::Color::White);
+            if(previousColorSelectorButton != nullptr)
+            {
+                previousColorSelectorButton->setBorder(0, sf::Color::White);
+            }
+            previousColorSelectorButton = colorSelectorButton;
         }
     }
 }

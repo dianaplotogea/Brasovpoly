@@ -10,29 +10,38 @@
 
 int uiRectangleShapePlayerSize = 30;
 int initialPlayerPositionX = 15;
-int initialPlayerPositionY = 40;
-int distanceBetweenPlayers = 15;
+int initialPlayerPositionY = 55;
+int distanceBetweenPlayers = 5;
 int numberOfColumnsPlayerRectangles = 3;
 
 int numberOfColumnsPlayerInfoTexts = 3;
 int playerNameTextCharacterSize = 35;
-int currentPlayerNameTextCharacterSize = 45;
-int playerNameTextPositionX = 300;
-int playerNameTextIntialPositionY = 300;
-int distanceBetweenPlayerNameTextsX = 250;
-int distanceBetweenPlayerNameTextsY = 125;
+int currentPlayerNameTextCharacterSize = 58;
+int playerNameTextPositionX = 275;
+int playerNameTextIntialPositionY = 250;
+int distanceBetweenPlayerNameTextsX = 300;
+int distanceBetweenPlayerNameTextsY = 175;
+int playerProfitAmountTextPositionY = 35;
 
-int initialMoneyAmount = 5000;
-int playerMoneyAmountTextPositionY = 50;
+int initialMoneyAmount = 8000;
+int playerMoneyAmountTextPositionY = 68;
 
 int currentPlayerIndex = 0;
 
+float delayAfterWhichNextButtonBecomesPressableAfterBuyPropertyButtonWasPressed = 1;
+
+int percentOfPropertyPriceWhichHasToBePaidWhenPropertyIsVisited = 20;
+
+int rollDiceResultMin = 2;
+int rollDiceResultMax = 12;
+
 Player* currentPlayerWhichHasToThrow;
 Player* previousPlayer;
+Player* previousPlayerWhoGotMoneyFromOwningProperty;
 
 Property* currentProperty;
 
-sf::Clock myGameClock;
+sf::Clock nextButtonActivatorClock;
 
 void createPlayerRectangles()
 {
@@ -72,7 +81,7 @@ void createPlayerInfoTexts()
             {
                 break;
             }
-            UIText* playerNameText = new UIText(inGameScene, &font, playerNameTextCharacterSize, players[i]->name, players[playerNameTextIndex]->color);
+            UIText* playerNameText = new UIText(inGameScene, &font, playerNameTextCharacterSize, players[playerNameTextIndex]->name, players[playerNameTextIndex]->color);
             playerNameText->setPosition(sf::Vector2f(playerNameTextPositionX + i * distanceBetweenPlayerNameTextsX, playerNameTextPositionY));
             inGameSceneUIElementsThatMustBeDeleted.push_back(playerNameText);
 
@@ -80,9 +89,13 @@ void createPlayerInfoTexts()
             playerMoneyAmountText->setPosition(sf::Vector2f(playerNameTextPositionX + i * distanceBetweenPlayerNameTextsX, playerNameTextPositionY + playerMoneyAmountTextPositionY));
             inGameSceneUIElementsThatMustBeDeleted.push_back(playerMoneyAmountText);
 
+            UIText* playerProfitAmountText = new UIText(inGameScene, &font, playerNameTextCharacterSize, "", players[playerNameTextIndex]->color);
+            playerProfitAmountText->setPosition(sf::Vector2f(playerNameTextPositionX + i * distanceBetweenPlayerNameTextsX, playerNameTextPositionY + playerMoneyAmountTextPositionY + playerProfitAmountTextPositionY));
+
             players[playerNameTextIndex]->moneyAmount = initialMoneyAmount;
             players[playerNameTextIndex]->playerNameText = playerNameText;
             players[playerNameTextIndex]->playerMoneyAmountText = playerMoneyAmountText;
+            players[playerNameTextIndex]->playerProfitAmountText = playerProfitAmountText;
             players[playerNameTextIndex]->currentLocation = locations[0]; // Start
 
             playerNameTextIndex++;
@@ -94,12 +107,10 @@ void createPlayerInfoTexts()
 void resizeCurrentPlayerInfoTexts()
 {
     currentPlayerWhichHasToThrow->playerNameText->setCharacterSize(currentPlayerNameTextCharacterSize);
-    currentPlayerWhichHasToThrow->playerMoneyAmountText->setCharacterSize(currentPlayerNameTextCharacterSize);
-
+    
     if(previousPlayer != nullptr)
     {
         previousPlayer->playerNameText->setCharacterSize(playerNameTextCharacterSize);
-        previousPlayer->playerMoneyAmountText->setCharacterSize(playerNameTextCharacterSize);
     }
 
 }
@@ -108,7 +119,11 @@ void startGameButtonEventHandler(sf::RenderWindow& window)
 {
     if(startGameButton->isMouseOver(window))
     {
-        std::cout << "startGame" << std::endl;
+        Property* firstProperty = dynamic_cast<Property*>(locations[1]);
+        if(firstProperty)
+        {
+            firstProperty->owner = nullptr; // It should be nullptr by default because it's set in the constructor, but for this particular property it's not
+        }
         playerSetupMenu.hideAll();
         inGameScene.showAll();
         buyPropertyButton->hide();
@@ -116,8 +131,10 @@ void startGameButtonEventHandler(sf::RenderWindow& window)
         currentState = GameState::InGame;
         createPlayerRectangles();
         createPlayerInfoTexts();
+        currentPlayerIndex = 0;
         currentPlayerWhichHasToThrow = players[currentPlayerIndex++];
         resizeCurrentPlayerInfoTexts();
+
     }
 }
 
@@ -147,13 +164,22 @@ void rollDiceButtonEventHandler(sf::RenderWindow& window)
 {
     if(rollDiceButton->isMouseOver(window))
     {
-        int rollDiceResult = getRadnomNumberBetweenTwoNumbersInclusive(2, 12);
         auto it = std::find(locations.begin(), locations.end(), currentPlayerWhichHasToThrow->currentLocation);
         if(it != locations.end())
         {
+            int rollDiceResult = getRadnomNumberBetweenTwoNumbersInclusive(rollDiceResultMin, rollDiceResultMax);
+            rollDiceResultText->setString(std::to_string(rollDiceResult));
+            if(previousPlayer != nullptr)
+            {
+                previousPlayer->playerProfitAmountText->setString("");
+                
+            }
+            if(previousPlayerWhoGotMoneyFromOwningProperty != nullptr)
+            {
+                previousPlayerWhoGotMoneyFromOwningProperty->playerProfitAmountText->setString("");
+            }
+            
             int currentLocationIndex = std::distance(locations.begin(), it);
-            std::cout << "Player is at " << currentLocationIndex << std::endl;
-            std::cout << "Roll dice: " << rollDiceResult << std::endl;
             currentLocationIndex += rollDiceResult;
             if(currentLocationIndex >= locations.size())
             {
@@ -164,30 +190,41 @@ void rollDiceButtonEventHandler(sf::RenderWindow& window)
             sf::Vector2f currentLocationPosition = locations[currentLocationIndex]->position;
             sf::Vector2f previousUiRectangleShapePlayerPosition = currentPlayerWhichHasToThrow->uiRectangleShapePlayer->getPosition();
             sf::Vector2f uiRectangleShapePlayerPositionOffset = sf::Vector2f(previousUiRectangleShapePlayerPosition.x - previousLocationPosition.x, previousUiRectangleShapePlayerPosition.y - previousLocationPosition.y );
-            std::cout << "uiRectangleShapePlayerPositionOffset.x " << uiRectangleShapePlayerPositionOffset.x << std::endl;
-            std::cout << "uiRectangleShapePlayerPositionOffset.y " << uiRectangleShapePlayerPositionOffset.y << std::endl;
             currentPlayerWhichHasToThrow->uiRectangleShapePlayer->setPosition(sf::Vector2f(currentLocationPosition.x + uiRectangleShapePlayerPositionOffset.x, currentLocationPosition.y + uiRectangleShapePlayerPositionOffset.y));
-            std::cout << "player moved to " << currentLocationIndex << std::endl;
             currentPlayerWhichHasToThrow->currentLocation = locations[currentLocationIndex];
             nextButton->show();
             rollDiceButton->hide();
             currentProperty = dynamic_cast<Property*>(locations[currentLocationIndex]);
-            if(currentProperty && currentPlayerWhichHasToThrow->moneyAmount>currentProperty->price && currentProperty->owner == nullptr)
+            if(currentProperty && currentPlayerWhichHasToThrow->moneyAmount>currentProperty->price && currentProperty->owner == nullptr) // Player can buy property
             {
-                std::cout << "Player can buy property" << std::endl;
                 buyPropertyButton->show();
             }
             else
             {
-                if(currentProperty && currentProperty->owner != currentPlayerWhichHasToThrow && currentProperty->owner != nullptr)
+                if(currentProperty && currentProperty->owner != currentPlayerWhichHasToThrow && currentProperty->owner != nullptr) // Player has to pay
                 {
-                    currentPlayerWhichHasToThrow->moneyAmount -= currentProperty->price/100;
-                    currentPlayerWhichHasToThrow->playerMoneyAmountText->setString(std::to_string(currentPlayerWhichHasToThrow->moneyAmount) + "RON");
-                    std::cout << "Player had to pay because" << currentProperty->name << " is owned by " << currentProperty->owner->name  << std::endl;
+                    int amountToPay = currentProperty->price*percentOfPropertyPriceWhichHasToBePaidWhenPropertyIsVisited/100;
+
+                    if(currentPlayerWhichHasToThrow->moneyAmount - amountToPay <=0)
+                    {
+                        std::cout << "player lost" << std::endl;
+                    }
+                    else
+                    {
+                        std::cout << "player didn't lost" << std::endl;
+                        currentPlayerWhichHasToThrow->moneyAmount -= amountToPay;
+                        currentPlayerWhichHasToThrow->playerProfitAmountText->setString("-" + std::to_string(amountToPay));
+                        currentPlayerWhichHasToThrow->playerMoneyAmountText->setString(std::to_string(currentPlayerWhichHasToThrow->moneyAmount) + "RON");
+                    }
+                    
+                    currentProperty->owner->moneyAmount += amountToPay;
+                    currentProperty->owner->playerProfitAmountText->setString("+" + std::to_string(amountToPay));
+                    currentProperty->owner->playerMoneyAmountText->setString(std::to_string(currentProperty->owner->moneyAmount) + "RON");
+                    previousPlayerWhoGotMoneyFromOwningProperty = currentProperty->owner;
                 }
                 moveToNextPlayer();
             }
-            myGameClock.restart();
+            nextButtonActivatorClock.restart();
         }
     }
 }
@@ -199,15 +236,16 @@ void buyPropertyButtonEventHandler(sf::RenderWindow& window)
         currentPlayerWhichHasToThrow->ownedProperties.push_back(currentProperty);
         currentPlayerWhichHasToThrow->moneyAmount -= currentProperty->price;
         currentProperty->owner = currentPlayerWhichHasToThrow;
-        currentProperty->propertySquare->setColor(currentPlayerWhichHasToThrow->color);
+        currentProperty->propertyColorSquare->setColor(currentPlayerWhichHasToThrow->color);
         currentPlayerWhichHasToThrow->playerMoneyAmountText->setString(std::to_string(currentPlayerWhichHasToThrow->moneyAmount) + "RON");
+        currentPlayerWhichHasToThrow->playerProfitAmountText->setString("-" + std::to_string(currentProperty->price));
         moveToNextPlayer();
     }
 }
 
 void nextButtonEventHandler(sf::RenderWindow& window)
 {
-    if(myGameClock.getElapsedTime().asSeconds() < 1.0) // a small delay has to be added, because otherwise the nextButton is pressed at the same time when the rollDiceButton is pressed
+    if(nextButtonActivatorClock.getElapsedTime().asSeconds() < delayAfterWhichNextButtonBecomesPressableAfterBuyPropertyButtonWasPressed) // a small delay has to be added, because otherwise the nextButton is pressed at the same time when the rollDiceButton is pressed
     {
         return;
     }

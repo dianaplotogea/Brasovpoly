@@ -6,6 +6,7 @@ int windowWidth = 1530;
 int windowHeight = 960;
 int buttonWidth = 200;
 int buttonHeight = 75;
+int buttonBorderThickness = 3;
 int backButtonPosition = 100;
 
 bool shouldStartGameButtonBeActivated = false;
@@ -16,6 +17,9 @@ UIContainer playerColorSelectorMenu;
 UIContainer inGameScene;
 
 sf::Font font;
+
+sf::Color buttonColor = sf::Color::Black;
+sf::Color buttonBorderColor = sf::Color::White;
 
 sf::Font* getGlobalFont()
 {
@@ -30,23 +34,14 @@ Button* rollDiceButton;
 Button* buyPropertyButton;
 Button* nextButton;
 
+UIText* rollDiceResultText;
+
 UISprite* closeButtonUISpritePlayerCountSelectionMenu;
 
 std::vector<Player*> players;
 
 std::vector<District> districts
 {
-    /*
-    District("Centru", sf::Color(255, 0, 102)),
-    District("Bartolomeu", sf::Color(255, 153, 51)),
-    District("Astra", sf::Color(26, 117, 255)),
-    District("Tractorul", sf::Color(0,204,204)),
-    District("Centrul nou", sf::Color(204,51,255)),
-    District("Ragadau", sf::Color(0,204,0)),
-    District("Poiana", sf::Color(0,102,0)),
-    District("Noua", sf::Color(255,204,102)),
-    District("Darste", sf::Color(255,153,187))
-    */
     District("Centru", sf::Color::White),
     District("Bartolomeu", sf::Color::White),
     District("Astra", sf::Color::White),
@@ -83,7 +78,7 @@ std::vector<Location*> locations
     new Property("Spitalul Judetean", districts[4], 2900),
 
     new Property("Dealul Melcilor", districts[5], 1200),
-    new Property("Urgente Stomatologie", districts[5], 1000),
+    new Property("Decathlon", districts[5], 900),
 
     new Property("Postavarul", districts[6], 3500),
     new Property("Belvedere", districts[6], 4500),
@@ -96,7 +91,21 @@ std::vector<Location*> locations
 
 };
 
+std::vector<sf::Color> colors =
+{
+    {153, 101, 21}, // Brown
+    {1, 50, 32}, // Dark green
+    {255, 192, 203}, // Pink
+    {128, 0, 128}, // Purple
+    {255, 165, 0}, // Orange
+    {190, 207, 64}, // Yellow
+    {207, 64, 64}, // Red
+    {64, 88, 207}, // Blue
+    {144, 238, 144} // Light green
+};
+
 std::vector<UIElement*> inGameSceneUIElementsThatMustBeDeleted;
 
+std::vector<UIRectangleShape*> propertyColorSquares;
 
 GameState currentState = GameState::PlayerCountSelection;

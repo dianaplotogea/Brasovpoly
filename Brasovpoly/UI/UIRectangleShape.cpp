@@ -32,6 +32,11 @@ void UIRectangleShape::setColor(sf::Color color)
     rectangleShape.setFillColor(color);
 }
 
+sf::Color UIRectangleShape::getColor()
+{
+    return rectangleShape.getFillColor();
+}
+
  sf::Vector2f UIRectangleShape::getPosition()
  {
     return rectangleShape.getPosition();

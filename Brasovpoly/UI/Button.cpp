@@ -1,6 +1,6 @@
 #include "Button.h"
 
-Button::Button(UIContainer& uiContainer, float x, float y, float width, float height, sf::Font* font, std::string text, sf::Color color) : UIElement(uiContainer)
+Button::Button(UIContainer& uiContainer, float x, float y, float width, float height, sf::Font* font, std::string text, sf::Color color, float borderThickness, sf::Color borderColor) : UIElement(uiContainer)
 {
     rect.setPosition(sf::Vector2f(x, y));
     rect.setSize(sf::Vector2f(width, height));
@@ -21,6 +21,8 @@ Button::Button(UIContainer& uiContainer, float x, float y, float width, float he
         x + (width - buttonText.getLocalBounds().width) / 2,
         y + (height - buttonText.getLocalBounds().height) / 2
     );
+
+    setBorder(borderThickness, borderColor);
 }
 
 void Button::draw(sf::RenderWindow& window)
@@ -53,3 +55,14 @@ bool Button::isMouseOver(sf::RenderWindow& window)
     }
     return false;
 } 
+
+sf::Color Button::getColor()
+{
+    return rect.getFillColor();
+}
+
+void Button::setBorder(float borderThickness, sf::Color borderColor)
+{
+    rect.setOutlineColor(borderColor);
+    rect.setOutlineThickness(borderThickness);
+}

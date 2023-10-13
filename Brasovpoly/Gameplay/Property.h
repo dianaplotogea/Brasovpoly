@@ -13,7 +13,7 @@ public:
 
     std::string name;
 
-    UIRectangleShape* propertySquare;
+    UIRectangleShape* propertyColorSquare;
 
     District district;
 

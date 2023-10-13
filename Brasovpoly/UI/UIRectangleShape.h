@@ -11,6 +11,7 @@ public:
     void setBorder(float borderThickness, sf::Color borderColor);
     void setPosition(sf::Vector2f position);
     void setColor(sf::Color color);
+    sf::Color getColor();
     sf::Vector2f getPosition();
     
 private:

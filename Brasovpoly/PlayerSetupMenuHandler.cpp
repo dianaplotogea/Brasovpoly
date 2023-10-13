@@ -27,17 +27,18 @@ sf::Text inputText;
 void createPlayerSetupMenu(int numberOfPlayers)
 {
     currentState = GameState::PlayerSetup;
+    int colorIndex = colors.size()-1;
     for(int i=2;i<numberOfPlayers+3;i++)
     {
         float positionX = distanceBetweenElementsX - inputFieldWidth + distanceBetweenElementsX * (i-2);
 
-        UIText* playerIndexText = new UIText(playerSetupMenu, &font, 24, "Player" + std::to_string(i-1)); // TODO: Magic number
+        UIText* playerIndexText = new UIText(playerSetupMenu, &font, 24, "Player" + std::to_string(i-1), colors[colorIndex]); // TODO: Magic number
         playerIndexText->setPosition(sf::Vector2f(positionX + (inputFieldWidth - playerIndexText->getLocalBounds().width)/2, textPositionY));
 
         InputField* inputField = new InputField(playerSetupMenu, positionX, inputFieldPositionY, inputFieldWidth, inputFieldHeight, font);
 
-        Button* colorButton = new Button(playerSetupMenu, positionX + (inputFieldWidth - colorButtonWidth)/2, colorButtonPositionY, colorButtonWidth, colorButtonHeight, &font, "Change color", sf::Color::Green);
-        Player* player = new Player(i-1, playerIndexText, inputField, colorButton);
+        Button* colorButton = new Button(playerSetupMenu, positionX + (inputFieldWidth - colorButtonWidth)/2, colorButtonPositionY, colorButtonWidth, colorButtonHeight, &font, "Change color", buttonColor, buttonBorderThickness, buttonBorderColor);
+        Player* player = new Player(i-1, playerIndexText, inputField, colorButton, colors[colorIndex--]);
         players.push_back(player);
     }
 
@@ -125,7 +126,9 @@ void createStartGameButton()
         startGameButtonHeight,
         &font,
         "Start game",
-        sf::Color::Green
+        buttonColor,
+        buttonBorderThickness,
+        buttonBorderColor
     );
     startGameButton->hide();
 }

@@ -16,6 +16,7 @@ int locationsPadding = 90;
 int locationBorderSize = 5;
 int numberOfRowsAndColumnsStart = 5;
 int playerIndexTextCharacterSize = 15;
+int propertyColorSquareHeight = 50;
 
 int numberOfPropertiesHorizontalUp = 7;
 int numberOfPropertiesVerticalLeft = 4;
@@ -23,7 +24,18 @@ int numberOfPropertiesHorizontalDown = 8;
 int numberOfPropertiesVerticalRight = 4; 
 
 int propertyNameTextPaddingY = 10;
-int propertyPriceTextPaddingY = 120;
+int propertyPriceTextPaddingY = 125;
+
+float rollDiceButtonPositionX = 320;
+float rollDiceButtonPositionY = 592.5;
+
+float buyPropertyButtonPositionX = 620;
+float buyPropertyButtonPositionY = 592.5;
+
+int rollDiceResultTextPositionX = 1200;
+int rollDiceResultTextPositionY = 600;
+
+int rollDiceResultTextCharacterSize = 45;
 
 UIRectangleShape* createPropertySquare(sf::Vector2f position)
 {
@@ -36,7 +48,16 @@ UIRectangleShape* createPropertySquare(sf::Vector2f position)
     );
     propertySquare->setBorder(locationBorderSize, sf::Color::White);
 
-    return propertySquare;
+    UIRectangleShape* propertyColorSquare = new UIRectangleShape
+    (
+        inGameScene,
+        position,
+        sf::Vector2f(locationSize, propertyColorSquareHeight),
+        sf::Color::Black
+    );
+    propertyColorSquares.push_back(propertyColorSquare);
+
+    return propertyColorSquare;
 }
 
 void createLocationsHorizontalUp()
@@ -48,7 +69,7 @@ void createLocationsHorizontalUp()
         {
             sf::Vector2f propertyPosition = sf::Vector2f(locationsPadding + propertyIndex*locationSize, locationsPadding);
             property->position = propertyPosition;
-            property->propertySquare = createPropertySquare(propertyPosition);    
+            property->propertyColorSquare = createPropertySquare(propertyPosition);    
 
             UIText* propertyNameText = new UIText(inGameScene, &font, playerIndexTextCharacterSize, property->name, property->district.color);
             propertyNameText->setPosition(sf::Vector2f(locationsPadding + propertyIndex*locationSize + (locationSize/2-propertyNameText->getLocalBounds().width/2), locationsPadding + propertyNameTextPaddingY));
@@ -68,7 +89,7 @@ void createLocationsVerticalRight()
         {
             sf::Vector2f propertyPosition = sf::Vector2f(windowWidth - locationsPadding - locationSize + locationBorderSize, locationsPadding + (propertyIndex-numberOfPropertiesHorizontalUp-1)*(locationSize + locationBorderSize));
             property->position = propertyPosition;
-            property->propertySquare = createPropertySquare(propertyPosition);
+            property->propertyColorSquare = createPropertySquare(propertyPosition);
 
             UIText* propertyNameText = new UIText(inGameScene, &font, playerIndexTextCharacterSize, property->name, property->district.color);
             propertyNameText->setPosition(sf::Vector2f(windowWidth - locationsPadding - locationSize + locationBorderSize + (locationSize/2-propertyNameText->getLocalBounds().width/2), locationsPadding + (propertyIndex-numberOfPropertiesHorizontalUp-1)*(locationSize + locationBorderSize) + propertyNameTextPaddingY));
@@ -88,7 +109,7 @@ void createLocationsHorizontalDown()
         {
             sf::Vector2f propertyPosition = sf::Vector2f(locationsPadding + locationBorderSize + (locationSize) * (propertyIndex-numberOfPropertiesHorizontalUp-numberOfPropertiesVerticalLeft), windowHeight - locationsPadding - locationSize - locationBorderSize*2);
             property->position = propertyPosition;
-            property->propertySquare = createPropertySquare(propertyPosition);
+            property->propertyColorSquare = createPropertySquare(propertyPosition);
         
             UIText* propertyNameText = new UIText(inGameScene, &font, playerIndexTextCharacterSize, property->name, property->district.color);
             propertyNameText->setPosition(sf::Vector2f(locationsPadding + (propertyIndex-numberOfPropertiesHorizontalUp-numberOfPropertiesVerticalLeft)*locationSize + (locationSize/2-propertyNameText->getLocalBounds().width/2), windowHeight - locationsPadding - locationSize - locationBorderSize*2 + propertyNameTextPaddingY));
@@ -109,7 +130,7 @@ void createLocationsVerticalLeft()
         {
             sf::Vector2f propertyPosition = sf::Vector2f( locationsPadding, locationsPadding + (propertyIndex-numberOfPropertiesHorizontalUp-numberOfPropertiesVerticalLeft-numberOfPropertiesHorizontalDown)*(locationSize + locationBorderSize));
             property->position = propertyPosition;
-            property->propertySquare = createPropertySquare(propertyPosition);
+            property->propertyColorSquare = createPropertySquare(propertyPosition);
         
             UIText* propertyNameText = new UIText(inGameScene, &font, playerIndexTextCharacterSize, property->name, property->district.color);
             propertyNameText->setPosition(sf::Vector2f(locationsPadding + (locationSize/2-propertyNameText->getLocalBounds().width/2), locationsPadding + (propertyIndex-numberOfPropertiesHorizontalUp-numberOfPropertiesVerticalLeft-numberOfPropertiesHorizontalDown)*(locationSize + locationBorderSize) + propertyNameTextPaddingY));
@@ -122,7 +143,7 @@ void createLocationsVerticalLeft()
 
 void createStart()
 {
-    sf::Vector2f startPosition = sf::Vector2f(locationsPadding,locationsPadding);
+    sf::Vector2f startPosition = sf::Vector2f(locationsPadding, locationsPadding);
     locations[0]->position = startPosition;
     UIRectangleShape* startSquare = new UIRectangleShape
     (
@@ -150,17 +171,14 @@ void createStart()
     }
 }
 
-float rollDiceButtonPositionX = 320;
-float rollDiceButtonPositionY = 592.5;
-
-float buyPropertyButtonPositionX = 570;
-float buyPropertyButtonPositionY = 592.5;
-
 void createInGameSceneButtons()
 {
-    rollDiceButton = new Button(inGameScene, rollDiceButtonPositionX, rollDiceButtonPositionY, buttonWidth, buttonHeight, &font, "Roll Dice", sf::Color::Green);
-    buyPropertyButton = new Button(inGameScene, buyPropertyButtonPositionX, buyPropertyButtonPositionY, buttonWidth, buttonHeight, &font, "Buy property", sf::Color::Green);
-    nextButton = new Button(inGameScene, rollDiceButtonPositionX, rollDiceButtonPositionY, buttonWidth, buttonHeight, &font, "Next", sf::Color::Green);
+    rollDiceButton = new Button(inGameScene, rollDiceButtonPositionX, rollDiceButtonPositionY, buttonWidth, buttonHeight, &font, "Roll Dice", buttonColor, buttonBorderThickness, buttonBorderColor);
+    buyPropertyButton = new Button(inGameScene, buyPropertyButtonPositionX, buyPropertyButtonPositionY, buttonWidth, buttonHeight, &font, "Buy property", buttonColor, buttonBorderThickness, buttonBorderColor);
+    nextButton = new Button(inGameScene, rollDiceButtonPositionX, rollDiceButtonPositionY, buttonWidth, buttonHeight, &font, "Next", buttonColor, buttonBorderThickness, buttonBorderColor);
+
+    rollDiceResultText = new UIText(inGameScene, &font, rollDiceResultTextCharacterSize, "" );
+    rollDiceResultText->setPosition(sf::Vector2f(rollDiceResultTextPositionX, rollDiceResultTextPositionY));
 }
 
 void createInGameScene()

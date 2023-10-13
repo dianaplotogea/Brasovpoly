@@ -3,6 +3,7 @@
 #include "UI/Button.h"
 #include "UI/UiSprite.h"
 #include "UI/UIRectangleShape.h"
+#include "UI/UIText.h"
 #include <iostream>
 #include "PlayerSetupMenuHandler.h"
 
@@ -88,10 +89,19 @@ void closePlayerSetupMenu(sf::RenderWindow& window)
                     }
                 }
                 inGameSceneUIElementsThatMustBeDeleted.clear();
-
+                for(UIRectangleShape* propertyColorSquare : propertyColorSquares)
+                {
+                    propertyColorSquare->setColor(sf::Color::Black); // They become colored when a player buys them so they have to be colored again to have the background color
+                }
+                for(Location* location : locations){
+                    Property* property = dynamic_cast<Property*>(location); 
+                    if(property)
+                    {
+                        property->owner = nullptr; // Some of the properties are bought by a player so their owner has to be set to nullptr
+                    }       
+                }
+                rollDiceResultText->setString("");
             }
-
         }
-
     }
 }
