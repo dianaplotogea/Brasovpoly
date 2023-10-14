@@ -32,6 +32,11 @@ void UIText::setString(const std::string& textStr)
     text.setString(textStr);
 }
 
+std::string UIText::getString()
+{
+    return text.getString();
+}
+
 void UIText::setPosition(const sf::Vector2f& position)
 {
     text.setPosition(position);
@@ -50,4 +55,9 @@ void UIText::setColor(const sf::Color& color)
 sf::FloatRect UIText::getLocalBounds()
 {
     return text.getLocalBounds();
+}
+
+sf::Vector2f UIText::getPosition()
+{
+    return text.getPosition();
 }

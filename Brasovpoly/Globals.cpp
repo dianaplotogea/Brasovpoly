@@ -10,6 +10,7 @@ int buttonBorderThickness = 3;
 int backButtonPosition = 100;
 
 bool shouldStartGameButtonBeActivated = false;
+bool shouldInGameClockWork = false;
 
 UIContainer playerCountSelectionMenu;
 UIContainer playerSetupMenu;
@@ -35,10 +36,18 @@ Button* buyPropertyButton;
 Button* nextButton;
 
 UIText* rollDiceResultText;
+UIText* gameOverText;
+UIText* gameOverPlayingTimeText;
+UIText* inGameClockText;
+
+sf::Clock* playingTimeClock = new sf::Clock();
+
+std::vector<UIText*> leaderBoardNameTexts;
 
 UISprite* closeButtonUISpritePlayerCountSelectionMenu;
 
 std::vector<Player*> players;
+std::vector<Player*> playersInWinningOrder;
 
 std::vector<District> districts
 {

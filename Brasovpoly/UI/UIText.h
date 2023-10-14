@@ -12,10 +12,12 @@ public:
     sf::FloatRect getLocalBounds() const;
     void setOrigin(float x, float y);
     void setString(const std::string& text);
+    std::string getString();
     void setPosition(const sf::Vector2f& position);
     void setCharacterSize(unsigned int size);
     void setColor(const sf::Color& color);
     sf::FloatRect getLocalBounds();
+    sf::Vector2f getPosition();
 
 private:
     sf::Text text;

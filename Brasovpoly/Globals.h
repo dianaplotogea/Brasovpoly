@@ -5,8 +5,8 @@
 
 sf::Font* getGlobalFont(); // A getter is needed in order to put it as a default value in the constructor of the Button. It has to be declared here, don't move it do
 
-#include "UI/UIContainer.h"
 #include <vector>
+#include "UI/UIContainer.h"
 #include "Player.h"
 #include "UI/UISprite.h"
 #include "UI/UIRectangleShape.h"
@@ -21,6 +21,7 @@ extern int buttonBorderThickness;
 extern int backButtonPosition;
 
 extern bool shouldStartGameButtonBeActivated;
+extern bool shouldInGameClockWork;
 
 extern UIContainer playerCountSelectionMenu;
 extern UIContainer playerSetupMenu;
@@ -39,10 +40,18 @@ extern Button* buyPropertyButton;
 extern Button* nextButton;
 
 extern UIText* rollDiceResultText;
+extern UIText* gameOverText;
+extern UIText* gameOverPlayingTimeText;
+extern UIText* inGameClockText;
+
+extern sf::Clock* playingTimeClock;
+
+extern std::vector<UIText*> leaderBoardNameTexts;
 
 extern UISprite* closeButtonUISpritePlayerCountSelectionMenu;
-
+ 
 extern std::vector<Player*> players;
+extern std::vector<Player*> playersInWinningOrder;
 
 extern std::vector<District> districts;
 

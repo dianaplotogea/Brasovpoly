@@ -5,14 +5,12 @@
 #include "UI/Button.h"
 #include "UI/UIContainer.h"
 #include "UI/UIText.h"
-#include "PlayerCountSelectionMenuHandler.h"
-#include "PlayerSetupMenuHandler.h"
-#include "PlayerColorSelector.h"
+#include "Menu/PlayerCountSelectionMenuHandler.h"
+#include "Menu/PlayerSetupMenuHandler.h"
+#include "Menu/PlayerColorSelector.h"
 #include "CloseButtonHandler.h"
-#include "PlayerColorSelector.h"
-#include "GameplayHandler.h"
-#include "InGameSceneCreator.h"
-#include "InGameSceneCreator.h"
+#include "Gameplay/GameplayHandler.h"
+#include "Gameplay/InGameSceneCreator.h"
 #include "Globals.h"
 
 void createGUI()
@@ -47,6 +45,9 @@ int main()
         std::cerr << "Could not load font" << std::endl;
         return 1;
     }
+
+    window.setVerticalSyncEnabled(true); // Enable V-sync, otherwise the GPU usage becomes really high
+
 
     createGUI();
     
