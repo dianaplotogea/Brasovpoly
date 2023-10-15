@@ -51,52 +51,52 @@ std::vector<Player*> playersInWinningOrder;
 
 std::vector<District> districts
 {
-    District("Centru", sf::Color::White),
-    District("Bartolomeu", sf::Color::White),
-    District("Astra", sf::Color::White),
-    District("Tractorul", sf::Color::White),
-    District("Centrul nou", sf::Color::White),
-    District("Ragadau", sf::Color::White),
-    District("Poiana", sf::Color::White),
-    District("Noua", sf::Color::White),
-    District("Darste", sf::Color::White)
+    District("Centru", sf::Color::#ff0066),
+    District("Bartolomeu", sf::Color::#ff9933),
+    District("Astra", sf::Color::#1a75ff),
+    District("Tractorul", sf::Color::#00cccc),
+    District("Centrul nou", sf::Color::#cc33ff),
+    District("Ragadau", sf::Color::#00cc00),
+    District("Poiana", sf::Color::#006600),
+    District("Noua", sf::Color::#ffcc66),
+    District("Darste", sf::Color::#ff99bb))
 };
 
 std::vector<Location*> locations
 {
     new Start(),
 
-    new Property("Piata Sfatului", districts[0], 5000),
-    new Property("Livada Postei", districts[0], 4500),
+    new Property("Piata Sfatului", districts[0], 3900),
+    new Property("Livada Postei", districts[0], 4000),
     new Property("Primaria", districts[0], 3900),
 
-    new Property("Gara Bartolomenu", districts[1], 100),
-    new Property("Biserica Bartolomeu", districts[1], 400),
+    new Property("Gara Bartolomenu", districts[1], 800),
+    new Property("Biserica Bartolomeu", districts[1], 500),
     new Property("Hornbach", districts[1], 50),
 
     new Property("Piata Astra", districts[2], 900),
-    new Property("Berzei", districts[2], 1000),
-    new Property("Lidl", districts[2], 1200),
+    new Property("Berzei", districts[2], 1100),
+    new Property("Lidl", districts[2], 1600),
 
-    new Property("Coresi", districts[3], 2200),
+    new Property("Coresi", districts[3], 2000),
     new Property("Gara", districts[3], 400),
     new Property("Kronwell", districts[3], 500),
 
     new Property("AFI", districts[4], 3300),
     new Property("eMAG", districts[4], 3100),
-    new Property("Spitalul Judetean", districts[4], 2900),
+    new Property("Spitalul Judetean", districts[4], 1900),
 
     new Property("Dealul Melcilor", districts[5], 1200),
     new Property("Decathlon", districts[5], 900),
 
-    new Property("Postavarul", districts[6], 3500),
-    new Property("Belvedere", districts[6], 4500),
+    new Property("Postavarul", districts[6], 4500),
+    new Property("Belvedere", districts[6], 4000),
 
-    new Property("Gradina Zoologica", districts[7], 1200),
+    new Property("Gradina Zoologica", districts[7], 1500),
     new Property("Lacul Noua", districts[7], 1500),
 
     new Property("Carrefour", districts[8], 1000),
-    new Property("Jumbo", districts[8], 600),
+    new Property("Jumbo", districts[8], 200),
 
 };
 
