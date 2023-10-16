@@ -10,11 +10,11 @@
 #include <random>
 #include <SFML/System/Clock.hpp>
 
-
 int uiRectangleShapePlayerSize = 30;
 int initialPlayerPositionX = 15;
 int initialPlayerPositionY = 55;
-int distanceBetweenPlayers = 5;
+int distanceBetweenPlayersX = 15;
+int distanceBetweenPlayersY = 5;
 int numberOfColumnsPlayerRectangles = 3;
 
 int numberOfColumnsPlayerInfoTexts = 3;
@@ -31,12 +31,12 @@ int playerMoneyAmountTextPositionY = 68;
 
 int currentPlayerIndex = 0;
 
-float delayAfterWhichNextButtonBecomesPressableAfterBuyPropertyButtonWasPressed = 1;
-
 int percentOfPropertyPriceWhichHasToBePaidWhenPropertyIsVisited = 20;
 
 int rollDiceResultMin = 2;
 int rollDiceResultMax = 12;
+
+float delayAfterWhichNextButtonBecomesPressableAfterBuyPropertyButtonWasPressed = 0.1;
 
 Player* currentPlayerWhichHasToThrow;
 Player* previousPlayer;
@@ -61,14 +61,14 @@ void createPlayerRectangles()
             UIRectangleShape* uiRectangleShapePlayer = new UIRectangleShape
             (
                 inGameScene,
-                sf::Vector2f(locations[0]->position.x + initialPlayerPositionX + i*(distanceBetweenPlayers + uiRectangleShapePlayerSize), playerPositionY),  
+                sf::Vector2f(locations[0]->position.x + initialPlayerPositionX + i*(distanceBetweenPlayersX + uiRectangleShapePlayerSize), playerPositionY),  
                 sf::Vector2f(uiRectangleShapePlayerSize, uiRectangleShapePlayerSize),
                 players[rectangleIndex]->color
             );
             players[rectangleIndex++]->uiRectangleShapePlayer = uiRectangleShapePlayer;
             inGameSceneUIElementsThatMustBeDeleted.push_back(uiRectangleShapePlayer);
         }
-        playerPositionY += distanceBetweenPlayers + uiRectangleShapePlayerSize;
+        playerPositionY += distanceBetweenPlayersY + uiRectangleShapePlayerSize;
     }
 }
 
@@ -136,6 +136,7 @@ void startGameButtonEventHandler(sf::RenderWindow& window)
         buyPropertyButton->hide();
         nextButton->hide();
         gameOverText->hide();
+        inGameClockText->hide();
         currentState = GameState::InGame;
         createPlayerRectangles();
         createPlayerInfoTexts();
@@ -177,7 +178,6 @@ void removeCurrentPlayer()
 {
     for(Location* location : currentPlayerWhichHasToThrow->ownedProperties)
     {
-
         Property* property = dynamic_cast<Property*>(location);
 
         if(property)
@@ -227,7 +227,6 @@ void removeCurrentPlayer()
     }
 }
 
-
 void rollDiceButtonEventHandler(sf::RenderWindow& window)
 {
     if(rollDiceButton->isMouseOver(window))
@@ -241,7 +240,6 @@ void rollDiceButtonEventHandler(sf::RenderWindow& window)
             {
                 previousPlayer->playerProfitAmountText->setString("");
 
-                
             }
             if(previousPlayerWhoGotMoneyFromOwningProperty != nullptr)
             {
@@ -328,7 +326,6 @@ void nextButtonEventHandler(sf::RenderWindow& window)
     }
     if(nextButton->isMouseOver(window))
     {
-        std::cout << "Next button pressed" << std::endl;
         moveToNextPlayer();
     }    
 }

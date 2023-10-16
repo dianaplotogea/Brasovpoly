@@ -1,8 +1,8 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-class Button;
-class UIText;
+class Button; // Button includes Globals.h and GLobals.h includes Player
+class UIText; // UIText includes Globals.h and Globals.h includes Player
 
 #include <string>
 #include <SFML/Graphics.hpp>

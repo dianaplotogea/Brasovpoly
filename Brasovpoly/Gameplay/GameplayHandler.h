@@ -3,6 +3,8 @@
 
 #include <SFML/Graphics.hpp>
 
+extern int percentOfPropertyPriceWhichHasToBePaidWhenPropertyIsVisited;
+
 void startGameButtonEventHandler(sf::RenderWindow& window);
 void rollDiceButtonEventHandler(sf::RenderWindow& window);
 void buyPropertyButtonEventHandler(sf::RenderWindow& window);

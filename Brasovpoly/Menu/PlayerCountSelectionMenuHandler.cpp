@@ -14,15 +14,17 @@ int playerCountSelectionButtonDistanceBetweenButtonsY = 100;
 int playerCountSelectionTextPositionY = 200;
 int playerCountSelectionTextCharacterSize = 30;
 
+int tutorialButtonPadding = 30;
+int tutorialButtonSize = 45;
+
 std::vector<Button*> playerCountSelectionButtons;
+
+sf::Texture tutorialButtonTexture;
 
 void createPlayerCountSelectionMenu()
 {
-    std::cout<<"Creating menu" << std::endl;
     UIText* playerCountSelectionText = new UIText(playerCountSelectionMenu, &font, playerCountSelectionTextCharacterSize, "Select the number of players:");
-    playerCountSelectionText->setPosition(sf::Vector2f(windowWidth/2, playerCountSelectionTextPositionY));
-    sf::FloatRect playerCountSelectionTextRect = playerCountSelectionText->getLocalBounds();
-    playerCountSelectionText->setOrigin(playerCountSelectionTextRect.left + playerCountSelectionTextRect.width/2.0f, playerCountSelectionTextRect.top  + playerCountSelectionTextRect.height/2.0f);
+    playerCountSelectionText->setPosition(sf::Vector2f(windowWidth/2 - playerCountSelectionText->getLocalBounds().width/2, playerCountSelectionTextPositionY));
 
     for(int i=2;i<maximumNumberOfPlayers+1;i++)
     {
@@ -40,8 +42,18 @@ void createPlayerCountSelectionMenu()
             buttonBorderColor
         );
         playerCountSelectionButtons.push_back(numberOfPlayersSelectionButton);
+        outlineColorHoverButtons.push_back(numberOfPlayersSelectionButton);
     }
-    
+
+    if(!tutorialButtonTexture.loadFromFile("Assets/Tutorial.png"))
+    {
+        std::cerr << "Failed to load image" << std::endl;
+    }
+
+    tutorialButton = new Button(playerCountSelectionMenu, windowWidth - tutorialButtonPadding - tutorialButtonSize, tutorialButtonPadding, tutorialButtonSize, tutorialButtonSize );
+    tutorialButtonUISprite = new UISprite(playerCountSelectionMenu, &tutorialButtonTexture, sf::Vector2f(windowWidth - tutorialButtonPadding - tutorialButtonSize, tutorialButtonPadding), sf::Vector2f(tutorialButtonSize, tutorialButtonSize)  );
+    tutorialButton->uiSprite = tutorialButtonUISprite;
+    spriteColorHoverButtons.push_back(tutorialButton);
 }
 
 void playerCountSelectionButtonsEventHandler(sf::RenderWindow& window)

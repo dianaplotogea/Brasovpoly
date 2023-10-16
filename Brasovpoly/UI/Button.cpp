@@ -2,9 +2,9 @@
 
 Button::Button(UIContainer& uiContainer, float x, float y, float width, float height, sf::Font* font, std::string text, sf::Color color, float borderThickness, sf::Color borderColor) : UIElement(uiContainer)
 {
-    rect.setPosition(sf::Vector2f(x, y));
-    rect.setSize(sf::Vector2f(width, height));
-    rect.setFillColor(color);
+    rectangleShape.setPosition(sf::Vector2f(x, y));
+    rectangleShape.setSize(sf::Vector2f(width, height));
+    rectangleShape.setFillColor(color);
         
     buttonText.setFont(*font);
     buttonText.setString(text);
@@ -29,7 +29,7 @@ void Button::draw(sf::RenderWindow& window)
 {
     if (visible)
     {
-        window.draw(rect);
+        window.draw(rectangleShape);
         window.draw(buttonText);
     }
 }
@@ -44,12 +44,10 @@ bool Button::isMouseOver(sf::RenderWindow& window)
     float mouseX = sf::Mouse::getPosition(window).x;
     float mouseY = sf::Mouse::getPosition(window).y;
 
-    float btnPosX = rect.getPosition().x;
-    float btnPosY = rect.getPosition().y;
-    float btnxPosWidth = btnPosX + rect.getLocalBounds().width;
-    float btnyPosHeight = btnPosY + rect.getLocalBounds().height;
+    float btnPosX = rectangleShape.getPosition().x;
+    float btnPosY = rectangleShape.getPosition().y;
 
-    if (mouseX < btnxPosWidth && mouseX > btnPosX && mouseY < btnyPosHeight && mouseY > btnPosY)
+    if (mouseX < btnPosX + rectangleShape.getLocalBounds().width && mouseX > btnPosX && mouseY < btnPosY + rectangleShape.getLocalBounds().height && mouseY > btnPosY)
     {
         return true;
     }
@@ -58,11 +56,11 @@ bool Button::isMouseOver(sf::RenderWindow& window)
 
 sf::Color Button::getColor()
 {
-    return rect.getFillColor();
+    return rectangleShape.getFillColor();
 }
 
 void Button::setBorder(float borderThickness, sf::Color borderColor)
 {
-    rect.setOutlineColor(borderColor);
-    rect.setOutlineThickness(borderThickness);
+    rectangleShape.setOutlineColor(borderColor);
+    rectangleShape.setOutlineThickness(borderThickness);
 }

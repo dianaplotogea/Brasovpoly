@@ -14,9 +14,11 @@ public:
     bool isMouseOver(sf::RenderWindow& window);
     sf::Color getColor();
     void setBorder(float borderThickness, sf::Color borderColor);
+    sf::RectangleShape rectangleShape;
+    UISprite* uiSprite;
 
 private:
-    sf::RectangleShape rect;
+    
     sf::Text buttonText;
 };
 

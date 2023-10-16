@@ -37,7 +37,7 @@ sf::Color UIRectangleShape::getColor()
     return rectangleShape.getFillColor();
 }
 
- sf::Vector2f UIRectangleShape::getPosition()
- {
+sf::Vector2f UIRectangleShape::getPosition()
+{
     return rectangleShape.getPosition();
- }
+}

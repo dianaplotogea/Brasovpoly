@@ -16,9 +16,14 @@ int inputFieldPositionY = 250;
 int colorButtonPositionY = 350;
 int colorButtonWidth = 150;
 int colorButtonHeight = 50;
+int inputTextPosition = 50;
 
-float inputFieldWidth = 220;
-float inputFieldHeight = 24;
+int inputFieldWidth = 220;
+int inputFieldHeight = 24;
+
+int startGameButtonWidth = 200;
+int startGameButtonHeight = 50;
+int startGameButtonDistanceFromBottom = 100;
 
 std::string inputString;
 
@@ -38,13 +43,15 @@ void createPlayerSetupMenu(int numberOfPlayers)
         InputField* inputField = new InputField(playerSetupMenu, positionX, inputFieldPositionY, inputFieldWidth, inputFieldHeight, font);
 
         Button* colorButton = new Button(playerSetupMenu, positionX + (inputFieldWidth - colorButtonWidth)/2, colorButtonPositionY, colorButtonWidth, colorButtonHeight, &font, "Change color", buttonColor, buttonBorderThickness, buttonBorderColor);
+        outlineColorHoverButtons.push_back(colorButton);
+        
         Player* player = new Player(i-1, playerIndexText, inputField, colorButton, colors[colorIndex--]);
         players.push_back(player);
     }
 
     inputText.setFont(font);
     inputText.setCharacterSize(24);
-    inputText.setPosition(50.f, 50.f);
+    inputText.setPosition(inputTextPosition, inputTextPosition);
     inputText.setString(inputString);
 }
 
@@ -110,10 +117,6 @@ void activateStartGameButtonIfAllPlayersAreSet()
     
 }
 
-float startGameButtonWidth = 200;
-float startGameButtonHeight = 50;
-float startGameButtonDistanceFromBottom = 100;
-
 void createStartGameButton()
 {
     startGameButton = new Button
@@ -129,5 +132,6 @@ void createStartGameButton()
         buttonBorderThickness,
         buttonBorderColor
     );
+    outlineColorHoverButtons.push_back(startGameButton);
     startGameButton->hide();
 }

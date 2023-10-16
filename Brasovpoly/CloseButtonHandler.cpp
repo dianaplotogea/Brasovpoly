@@ -8,18 +8,21 @@
 #include "Menu/PlayerSetupMenuHandler.h"
 
 int closeButtonSize = 45;
+int closeButtonPadding = 30;
 
-sf::Texture texture;
+sf::Texture closeButtonTexture;
 
 void createCloseButton()
 {   
-    if (!texture.loadFromFile("Assets/BackButton.png"))
+    if(!closeButtonTexture.loadFromFile("Assets/BackButton.png"))
     {
         std::cerr << "Failed to load image" << std::endl;
     }
-    closeButton = new Button(emptyUIContainer, 30, 30, closeButtonSize, closeButtonSize);
-    closeButtonUISpritePlayerCountSelectionMenu = new UISprite(emptyUIContainer, &texture, sf::Vector2f(30, 30), sf::Vector2f(closeButtonSize, closeButtonSize));
-
+    closeButton = new Button(emptyUIContainer, closeButtonPadding, closeButtonPadding, closeButtonSize, closeButtonSize);
+    closeButtonUISpritePlayerCountSelectionMenu = new UISprite(emptyUIContainer, &closeButtonTexture, sf::Vector2f(closeButtonPadding, closeButtonPadding), sf::Vector2f(closeButtonSize, closeButtonSize));
+    closeButton->uiSprite = closeButtonUISpritePlayerCountSelectionMenu;
+    spriteColorHoverButtons.push_back(closeButton);
+    
 }
 
 void resetPlayerSetupMenu()
@@ -28,10 +31,18 @@ void resetPlayerSetupMenu()
     std::vector<UIElement*> uiElements = playerSetupMenu.elements;
     for(UIElement* uiElement : uiElements)
     {
-        if(uiElement != startGameButton)
+        if(uiElement == startGameButton)
         {
-            delete uiElement;
+            continue;
         }
+        auto it = std::find(outlineColorHoverButtons.begin(), outlineColorHoverButtons.end(), uiElement);
+        if(it != outlineColorHoverButtons.end())
+        {
+            outlineColorHoverButtons.erase(it);
+            
+        }
+        delete uiElement;
+        
                     
     }
     playerSetupMenu.elements.clear();
@@ -49,7 +60,16 @@ void closePlayerSetupMenu(sf::RenderWindow& window)
         {
             case GameState::PlayerSetup:
             {
+                std::cout << "Back from PlayerSetup menu" << std::endl;
                 resetPlayerSetupMenu();
+                break;
+            }
+            case GameState::TutorialMenu:
+            {
+                std::cout << "Back from Tutorial menu" << std::endl;
+                currentState = GameState::PlayerCountSelection;
+                playerCountSelectionMenu.showAll();
+                tutorialMenu.hideAll();
                 break;
             }
             case GameState::PlayerColorSelection:
@@ -98,14 +118,14 @@ void closePlayerSetupMenu(sf::RenderWindow& window)
         
                 for(UIText* leaderBoardNameText : leaderBoardNameTexts)
                 {
-                    leaderBoardNameText->setColor(sf::Color::Transparent); // Don't delete the object please, it will cause a crash, it has to be made black instead so it won't be visible next time
+                    leaderBoardNameText->setColor(sf::Color::Transparent); // Don't delete the object please, it will cause a crash, it has to be made transparent instead so it won't be visible next time
             
                 }
         
                 leaderBoardNameTexts.clear();
 
                 gameOverPlayingTimeText->setString("");
-        
+                shouldInGameClockWork = false;
                 break;
         
             }

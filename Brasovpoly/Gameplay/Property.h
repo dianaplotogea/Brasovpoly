@@ -4,7 +4,7 @@
 #include "District.h"
 #include "Location.h"
 
-class Player;
+class Player; // Player includes Property as well so forward declaration is needed
 
 class Property : public Location
 {

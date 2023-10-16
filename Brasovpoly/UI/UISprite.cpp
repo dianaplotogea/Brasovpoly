@@ -18,6 +18,11 @@ void UISprite::setSize(const sf::Vector2f& size, const sf::Vector2u& textureSize
     sprite.setScale(size.x/textureSize.x, size.y/textureSize.y);
 }
 
+void UISprite::setColor(sf::Color color)
+{
+    sprite.setColor(color);
+}
+
 void UISprite::draw(sf::RenderWindow& window)
 {
     if (visible)

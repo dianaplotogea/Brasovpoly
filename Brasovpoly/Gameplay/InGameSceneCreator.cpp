@@ -26,24 +26,21 @@ int numberOfPropertiesVerticalRight = 4;
 int propertyNameTextPaddingY = 10;
 int propertyPriceTextPaddingY = 125;
 
-float rollDiceButtonPositionX = 320;
-float rollDiceButtonPositionY = 592.5;
-
-float buyPropertyButtonPositionX = 620;
-float buyPropertyButtonPositionY = 592.5;
-
 int rollDiceResultTextPositionX = 1200;
 int rollDiceResultTextPositionY = 600;
 
 int rollDiceResultTextCharacterSize = 45;
-
-int inGameClockTextCharacterSize = 40;
 
 int gameOverTextCharacterSize = 45;
 int gameOverTextPositionY = 100;
 
 int gameOverPlayingTimeTextCharacterSize = 40;
 
+float rollDiceButtonPositionX = 320;
+float rollDiceButtonPositionY = 592.5;
+
+float buyPropertyButtonPositionX = 620;
+float buyPropertyButtonPositionY = 592.5;
 
 UIRectangleShape* createPropertySquare(sf::Vector2f position)
 {
@@ -182,16 +179,20 @@ void createStart()
 void createInGameSceneButtons()
 {
     rollDiceButton = new Button(inGameScene, rollDiceButtonPositionX, rollDiceButtonPositionY, buttonWidth, buttonHeight, &font, "Roll Dice", buttonColor, buttonBorderThickness, buttonBorderColor);
+    outlineColorHoverButtons.push_back(rollDiceButton);
     buyPropertyButton = new Button(inGameScene, buyPropertyButtonPositionX, buyPropertyButtonPositionY, buttonWidth, buttonHeight, &font, "Buy property", buttonColor, buttonBorderThickness, buttonBorderColor);
+    outlineColorHoverButtons.push_back(buyPropertyButton);
     nextButton = new Button(inGameScene, rollDiceButtonPositionX, rollDiceButtonPositionY, buttonWidth, buttonHeight, &font, "Next", buttonColor, buttonBorderThickness, buttonBorderColor);
-
+    outlineColorHoverButtons.push_back(nextButton);
+    
     rollDiceResultText = new UIText(inGameScene, &font, rollDiceResultTextCharacterSize, "" );
     rollDiceResultText->setPosition(sf::Vector2f(rollDiceResultTextPositionX, rollDiceResultTextPositionY));
 }
 
 void createInGameClockText()
 {
-    inGameClockText = new UIText(inGameScene, &font, inGameClockTextCharacterSize, "02h:23m:15s");
+    inGameClockText = new UIText(inGameScene);
+    
 }
 
 void createGameOverScreen()

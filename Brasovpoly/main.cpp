@@ -11,19 +11,23 @@
 #include "CloseButtonHandler.h"
 #include "Gameplay/GameplayHandler.h"
 #include "Gameplay/InGameSceneCreator.h"
+#include "Menu/TutorialMenuHandler.h"
+#include "UI/ButtonHoverHandler.h"
 #include "Globals.h"
 
 void createGUI()
 {
     createCloseButton();
+    createTutorialMenu();
     createPlayerCountSelectionMenu();
     createColorSelectorMenu();
     createStartGameButton();
     createInGameScene();
 }
 
-void buttonEventHandling(sf::RenderWindow& window, sf::Event event)
+void buttonClickEvents(sf::RenderWindow& window, sf::Event event)
 {
+    tutorialButtonEventHandler(window);
     playerCountSelectionButtonsEventHandler(window);
     closePlayerSetupMenu(window);   
     selectPlayerSetupMenuInput(window, event);
@@ -35,6 +39,7 @@ void buttonEventHandling(sf::RenderWindow& window, sf::Event event)
     nextButtonEventHandler(window);
     
 }
+
 
 int main()
 {
@@ -48,7 +53,6 @@ int main()
 
     window.setVerticalSyncEnabled(true); // Enable V-sync, otherwise the GPU usage becomes really high
 
-
     createGUI();
     
     while (window.isOpen())
@@ -61,9 +65,11 @@ int main()
                 window.close(); // It is needed for the X button to work
             }
                 
+            buttonHover(window);
+
             if (event.type == sf::Event::MouseButtonPressed)
             {
-                buttonEventHandling(window, event);
+                buttonClickEvents(window, event);
             }
             else if (event.type == sf::Event::TextEntered)
             {
@@ -74,6 +80,7 @@ int main()
         window.clear();
 
         playerCountSelectionMenu.draw(window);
+        tutorialMenu.draw(window);
         playerSetupMenu.draw(window);
         playerColorSelectorMenu.draw(window);
         inGameScene.draw(window);
