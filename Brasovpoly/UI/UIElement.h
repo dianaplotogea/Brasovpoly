@@ -12,8 +12,6 @@ public:
     UIElement(UIContainer& uiContainer);
     bool visible = true;
     virtual void draw(sf::RenderWindow& window) = 0;
-    void hide();
-    void show();
     
 };
 

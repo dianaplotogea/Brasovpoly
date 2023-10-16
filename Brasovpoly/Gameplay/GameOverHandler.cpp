@@ -12,7 +12,7 @@ int gameOverPlayingTimeTextPositionY = 250;
 void gameOver()
 {
     inGameScene.hideAll();
-    gameOverText->show();
+    gameOverText->visible = true;
     playersInWinningOrder.insert(playersInWinningOrder.begin(), players[0]); // Adding the winner
     for(int i=0;i<playersInWinningOrder.size();i++)
     {
@@ -22,7 +22,7 @@ void gameOver()
     }
     playersInWinningOrder.clear();
     shouldInGameClockWork = false;
-    gameOverPlayingTimeText->show();
+    gameOverPlayingTimeText->visible = true;
     gameOverPlayingTimeText->setString("Playing time: " + inGameClockText->getString());
     gameOverPlayingTimeText->setPosition(sf::Vector2f(windowWidth/2 - gameOverPlayingTimeText->getLocalBounds().width/2, gameOverPlayingTimeTextPositionY));
 

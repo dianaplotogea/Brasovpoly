@@ -50,7 +50,7 @@ void displayTime()
         inGameClockText->setCharacterSize(inGameClockTextCharacterSize); // It has to be set here, if it's set when the text is created, sometimes the letter s becomes really small
         if(totalSeconds >=1)
         {
-            inGameClockText->show(); // It has to be shown only when more than one seconds have passed, otherwise it won't be at the correct position
+            inGameClockText->visible = true; // It has to be shown only when more than one seconds have passed, otherwise it won't be at the correct position
         }
         
         sf::sleep(sf::seconds(1));

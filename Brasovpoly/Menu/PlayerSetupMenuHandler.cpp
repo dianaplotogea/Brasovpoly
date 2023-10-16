@@ -84,13 +84,13 @@ void activateStartGameButtonIfAllPlayersAreSet()
     {
         if (player->name.empty())
         {
-            startGameButton->hide();
+            startGameButton->visible = false;
             return;
         }
 
         if (player->color == sf::Color::Black)
         {
-            startGameButton->hide();
+            startGameButton->visible = false;
             return;
         }
 
@@ -101,14 +101,14 @@ void activateStartGameButtonIfAllPlayersAreSet()
 
         if (!nameInserted || !colorInserted) // If insertion failed for either name or color, they are not unique
         {
-            startGameButton->hide();
+            startGameButton->visible = false;
             shouldStartGameButtonBeActivated = false;
             return;
         }        
     }
     if(currentState == GameState::PlayerSetup)
     {
-        startGameButton->show();
+        startGameButton->visible = true;
     }
     else if(currentState == GameState::PlayerColorSelection)
     {
@@ -133,5 +133,5 @@ void createStartGameButton()
         buttonBorderColor
     );
     outlineColorHoverButtons.push_back(startGameButton);
-    startGameButton->hide();
+    startGameButton->visible = false;
 }

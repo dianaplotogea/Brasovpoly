@@ -18,7 +18,7 @@ void UIContainer::draw(sf::RenderWindow& window)
 void UIContainer::hideAll() {
     for (auto element : elements)
     {
-        element->hide();
+        element->visible = false;
     }
 }
 
@@ -26,6 +26,6 @@ void UIContainer::showAll()
 {
     for (auto element : elements)
     {
-        element->show();
+        element->visible = true;
     }
 }

@@ -133,10 +133,10 @@ void startGameButtonEventHandler(sf::RenderWindow& window)
         }
         playerSetupMenu.hideAll();
         inGameScene.showAll();
-        buyPropertyButton->hide();
-        nextButton->hide();
-        gameOverText->hide();
-        inGameClockText->hide();
+        buyPropertyButton->visible = false;
+        nextButton->visible = false;
+        gameOverText->visible = false;
+        inGameClockText->visible = false;
         currentState = GameState::InGame;
         createPlayerRectangles();
         createPlayerInfoTexts();
@@ -154,9 +154,9 @@ void startGameButtonEventHandler(sf::RenderWindow& window)
 
 void moveToNextPlayer()
 {
-    nextButton->hide();
-    rollDiceButton->show();
-    buyPropertyButton->hide();
+    nextButton->visible = false;
+    rollDiceButton->visible = true;
+    buyPropertyButton->visible = false;
     previousPlayer = currentPlayerWhichHasToThrow;
     if(currentPlayerIndex >= players.size())
     {
@@ -260,12 +260,12 @@ void rollDiceButtonEventHandler(sf::RenderWindow& window)
             sf::Vector2f uiRectangleShapePlayerPositionOffset = sf::Vector2f(previousUiRectangleShapePlayerPosition.x - previousLocationPosition.x, previousUiRectangleShapePlayerPosition.y - previousLocationPosition.y );
             currentPlayerWhichHasToThrow->uiRectangleShapePlayer->setPosition(sf::Vector2f(currentLocationPosition.x + uiRectangleShapePlayerPositionOffset.x, currentLocationPosition.y + uiRectangleShapePlayerPositionOffset.y));
             currentPlayerWhichHasToThrow->currentLocation = locations[currentLocationIndex];
-            nextButton->show();
-            rollDiceButton->hide();
+            nextButton->visible = true;
+            rollDiceButton->visible = false;
             currentProperty = dynamic_cast<Property*>(locations[currentLocationIndex]);
             if(currentProperty && currentPlayerWhichHasToThrow->moneyAmount>currentProperty->price && currentProperty->owner == nullptr) // Player can buy property
             {
-                buyPropertyButton->show();
+                buyPropertyButton->visible = true;
 
             }
             else
