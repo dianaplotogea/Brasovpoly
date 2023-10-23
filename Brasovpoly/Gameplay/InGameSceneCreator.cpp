@@ -39,7 +39,12 @@ int gameOverPlayingTimeTextCharacterSize = 40;
 int transportPropertyTextureSize = 75;
 
 int goToJailLocationSize = 90;
-int goToJailPositionY = 30;
+int goToJailLocationPositionY = 30;
+
+float taxLocationSpriteWidth = 73;
+float taxLocationSpriteHeight = 103.5;
+
+float gamblingLocationSpriteSize = 110;
 
 float rollDiceButtonPositionX = 320;
 float rollDiceButtonPositionY = 592.5;
@@ -52,6 +57,8 @@ float buyHouseButtonPositionY = 592.5;
 
 sf::Texture goToJailLocationTexture;
 sf::Texture jailLocationTexture;
+sf::Texture taxLocationTexture;
+sf::Texture gamblingLocationTexture;
 
 std::vector<std::unique_ptr<sf::Texture>> transportPropertyTextures; 
 
@@ -228,7 +235,7 @@ void createGoToJailLocation()
         inGameScene,
         &goToJailLocationTexture,
         sf::Vector2f(goToJailLocationPosition.x + (locationSize - goToJailLocationSize)/2,
-        goToJailLocationPosition.y + goToJailPositionY),
+        goToJailLocationPosition.y + goToJailLocationPositionY),
         sf::Vector2f(goToJailLocationSize, goToJailLocationSize)
     );
     UIText* goToJailLocationText = new UIText
@@ -253,6 +260,7 @@ void createJailLocation()
         sf::Vector2f(locationSize, locationSize),
         sf::Color::Black
     );
+    jailLocationSquare->setBorder(locationBorderSize, sf::Color::White);
     if(!jailLocationTexture.loadFromFile("Assets/Jail.png"))
     {
         std::cerr << "Failed to load image" << std::endl;
@@ -262,10 +270,10 @@ void createJailLocation()
         inGameScene,
         &jailLocationTexture,
         sf::Vector2f(jailLocationPosition.x + (locationSize - goToJailLocationSize)/2,
-        jailLocationPosition.y + goToJailPositionY),
+        jailLocationPosition.y + goToJailLocationPositionY),
         sf::Vector2f(goToJailLocationSize, goToJailLocationSize)
     );
-    jailLocationSquare->setBorder(locationBorderSize, sf::Color::White);
+    
     UIText* jailLocationText = new UIText
     (
         inGameScene,
@@ -274,6 +282,58 @@ void createJailLocation()
         "Codlea"
     );
     jailLocationText->setPosition(sf::Vector2f(jailLocationPosition.x + (locationSize - jailLocationText->getLocalBounds().width)/2 , jailLocationPosition.y + propertyNameTextPaddingY));
+}
+
+void createTaxLocation()
+{
+    sf::Vector2f taxLocationPosition = sf::Vector2f(locationsPadding + 6*locationSize + buttonBorderThickness, locationsPadding + 4*locationSize + 6.75*buttonBorderThickness);
+    locations[14]->position = taxLocationPosition;
+    UIRectangleShape* taxLocationSquare = new UIRectangleShape
+    (
+        inGameScene,
+        taxLocationPosition,
+        sf::Vector2f(locationSize, locationSize),
+        sf::Color::Black
+    );
+    taxLocationSquare->setBorder(locationBorderSize, sf::Color::White);
+    if(!taxLocationTexture.loadFromFile("Assets/ANAF.png"))
+    {
+        std::cerr << "Failed to load image" << std::endl;
+    }
+    UISprite* taxLocationSprite = new UISprite
+    (
+        inGameScene,
+        &taxLocationTexture,
+        sf::Vector2f(taxLocationPosition.x + (locationSize - taxLocationSpriteWidth)/2, taxLocationPosition.y + (locationSize - taxLocationSpriteHeight)/2),
+        sf::Vector2f(taxLocationSpriteWidth, taxLocationSpriteHeight)
+    );
+
+}
+
+void createGamblingLocation()
+{
+    sf::Vector2f gamblingLocationPosition = sf::Vector2f(windowWidth - locationsPadding - locationSize + buttonBorderThickness*1.75, locationsPadding + 4*locationSize + 6.75*buttonBorderThickness);
+    locations[12]->position = gamblingLocationPosition;
+    UIRectangleShape* gamblingLocationSquare = new UIRectangleShape
+    (
+        inGameScene,
+        gamblingLocationPosition,
+        sf::Vector2f(locationSize, locationSize),
+        sf::Color::Black
+    );    
+    gamblingLocationSquare->setBorder(locationBorderSize, sf::Color::White);
+    if(!gamblingLocationTexture.loadFromFile("Assets/Superbet.png"))
+    {
+        std::cerr << "Failed to load image" << std::endl;
+    }
+    UISprite* gamblingLocationSprite = new UISprite
+    (
+        inGameScene,
+        &gamblingLocationTexture,
+        sf::Vector2f(gamblingLocationPosition.x + (locationSize - gamblingLocationSpriteSize)/2, gamblingLocationPosition.y + (locationSize - gamblingLocationSpriteSize)/2),
+        sf::Vector2f(gamblingLocationSpriteSize, gamblingLocationSpriteSize)
+    );
+
 }
 
 void createInGameSceneButtons()
@@ -314,6 +374,8 @@ void createInGameScene()
     createStart();
     createGoToJailLocation();
     createJailLocation();
+    createTaxLocation();
+    createGamblingLocation();
     createInGameSceneButtons();
     createInGameClockText();
     createGameOverScreen();

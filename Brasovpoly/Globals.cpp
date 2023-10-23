@@ -5,6 +5,8 @@
 #include "Gameplay/RealEstate.h"
 #include "Gameplay/GoToJailLocation.h"
 #include "Gameplay/JailLocation.h"
+#include "Gameplay/TaxLocation.h"
+#include "Gameplay/GamblingLocation.h"
 
 int windowWidth = 1530;
 int windowHeight = 960;
@@ -79,11 +81,10 @@ std::vector<Location*> locations
     new RealEstate("Coresi", 2200),
     new TransportProperty("RATBV", 100, "Bus.png"),
     new RealEstate("Kaufland", 400),
-    new RealEstate("Kronwell", 500),
+    new GamblingLocation(),
 
-    
     new RealEstate("eMAG", 3100),
-    new RealEstate("Spitalul Judetean", 2900),
+    new TaxLocation(),
     new RealEstate("Dealul Melcilor", 1200),
     new TransportProperty("Aeroport", 100, "Plane.png"),
     new RealEstate("Decathlon", 900),

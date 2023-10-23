@@ -10,6 +10,8 @@
 #include "RealEstate.h"
 #include "GoToJailLocation.h"
 #include "JailLocation.h"
+#include "TaxLocation.h"
+#include "GamblingLocation.h"
 #include <iostream>
 #include <random>
 #include <SFML/System/Clock.hpp>
@@ -33,7 +35,7 @@ int playerProfitAmountTextPositionY = 35;
 int initialMoneyAmount = 3000;
 int playerMoneyAmountTextPositionY = 68;
 
-int currentPlayerIndex = -1;
+int currentPlayerIndex = 0;
 
 int percentOfPropertyPriceWhichHasToBePaidWhenPropertyIsVisited = 20;
 
@@ -53,6 +55,14 @@ int hotelSpritePositionY = 45;
 
 int numberOfSkippedTurnsWhenPlayerisInJail = 3;
 
+int colorOfPlayerInJailAlphaValue = 128;
+
+int taxLocationAmount = 75; // ANAF
+
+int minimumGamblingAmountProfit = -200;
+int maximumGamblingAmountProfit = -100;
+
+int amountOfMoneyGotByAPlayerAfterItGoesTroughStart = -10;
 
 Player* currentPlayerWhichHasToThrow;
 Player* previousPlayer;
@@ -130,7 +140,10 @@ void createPlayerInfoTexts()
 
 void resizeCurrentPlayerInfoTexts()
 {
-    currentPlayerWhichHasToThrow->playerNameText->setCharacterSize(currentPlayerNameTextCharacterSize);
+    if(!currentPlayerWhichHasToThrow->isInJail)
+    {
+        currentPlayerWhichHasToThrow->playerNameText->setCharacterSize(currentPlayerNameTextCharacterSize);
+    }
     if(previousPlayer != nullptr)
     {
         previousPlayer->playerNameText->setCharacterSize(playerNameTextCharacterSize);
@@ -149,7 +162,7 @@ void startGameButtonEventHandler(sf::RenderWindow& window)
         }
         else
         {
-            std::cerr << "property is null" << std::endl;
+            std::cerr << "First location is not property" << std::endl;
         }
         playerSetupMenu.hideAll();
         inGameScene.showAll();
@@ -161,12 +174,8 @@ void startGameButtonEventHandler(sf::RenderWindow& window)
         currentState = GameState::InGame;
         createPlayerInfoTexts();
         createPlayerRectangles();
-        currentPlayerIndex = 0;
-        if(currentPlayerIndex == players.size())
-        {
-            currentPlayerIndex = 0;
-        }
-        currentPlayerWhichHasToThrow = players[currentPlayerIndex++];
+        currentPlayerIndex = 0; // It has to be resetted to 0, in case the game was restarted
+        currentPlayerWhichHasToThrow = players[currentPlayerIndex];
         resizeCurrentPlayerInfoTexts();
         startInGameClock();
 
@@ -185,27 +194,26 @@ void moveToNextPlayer()
     {
         currentPlayerIndex = 0;
     }
+    std::cout << "currentPlayerIndex: " << currentPlayerIndex << std::endl;
     currentPlayerWhichHasToThrow = players[currentPlayerIndex];
     
-    if(players[currentPlayerIndex]->isInJail)
+    if(currentPlayerWhichHasToThrow->isInJail)
     {
-        players[currentPlayerIndex]->numberOfTurnsSinceJail++;
-        if(players[currentPlayerIndex]->numberOfTurnsSinceJail == numberOfSkippedTurnsWhenPlayerisInJail)
+        currentPlayerWhichHasToThrow->numberOfTurnsSinceJail++;
+        if(currentPlayerWhichHasToThrow->numberOfTurnsSinceJail == numberOfSkippedTurnsWhenPlayerisInJail+1) // Player comes out from jail
         {
-            players[currentPlayerIndex]->numberOfTurnsSinceJail = 0;
-            players[currentPlayerIndex]->isInJail = false;
+            currentPlayerWhichHasToThrow->numberOfTurnsSinceJail = 0;
+            currentPlayerWhichHasToThrow->isInJail = false;
+            currentPlayerWhichHasToThrow->uiRectangleShapePlayer->setColor(currentPlayerWhichHasToThrow->color);
         }
-        else
+        else // Player is skipped because of jail
         {
+            std::cout << "Player is skipped because of jail" << std::endl;
+            resizeCurrentPlayerInfoTexts();
             moveToNextPlayer();
         }
     }
-    else
-    {
-        resizeCurrentPlayerInfoTexts();
-    }
-    
-    
+    resizeCurrentPlayerInfoTexts();
 }
 
 int getRadnomNumberBetweenTwoNumbersInclusive(int min, int max)
@@ -276,6 +284,16 @@ void removeCurrentPlayer()
     }
 }
 
+bool hasPlayerLost(Player* player, int amountToPay)
+{
+    if(player->moneyAmount - amountToPay <=0) // Player has lost
+    {
+        removeCurrentPlayer();
+        return true;
+    }
+    return false;
+}
+
 void rollDiceButtonEventHandler(sf::RenderWindow& window)
 {
     if(rollDiceButton->isMouseOver(window))
@@ -285,10 +303,9 @@ void rollDiceButtonEventHandler(sf::RenderWindow& window)
         {
             int rollDiceResult = getRadnomNumberBetweenTwoNumbersInclusive(rollDiceResultMin, rollDiceResultMax);
             rollDiceResultText->setString(std::to_string(rollDiceResult));
-            if(previousPlayer != nullptr)
+            for(Player* player: players)
             {
-                previousPlayer->playerProfitAmountText->setString("");
-
+                player->playerProfitAmountText->setString("");
             }
             if(previousPlayerWhoGotMoneyFromOwningProperty != nullptr)
             {
@@ -298,9 +315,16 @@ void rollDiceButtonEventHandler(sf::RenderWindow& window)
             
             int currentLocationIndex = std::distance(locations.begin(), it);
             currentLocationIndex += rollDiceResult;
-            if(currentLocationIndex >= locations.size())
+            if(currentLocationIndex >= locations.size()) // start
             {
                 currentLocationIndex -= locations.size();
+                if(hasPlayerLost(currentPlayerWhichHasToThrow, amountOfMoneyGotByAPlayerAfterItGoesTroughStart))
+                {
+                    return;
+                }
+                currentPlayerWhichHasToThrow->moneyAmount += amountOfMoneyGotByAPlayerAfterItGoesTroughStart;
+                currentPlayerWhichHasToThrow->playerProfitAmountText->setString(std::to_string(amountOfMoneyGotByAPlayerAfterItGoesTroughStart));
+                currentPlayerWhichHasToThrow->playerMoneyAmountText->setString(std::to_string(currentPlayerWhichHasToThrow->moneyAmount) + "RON");
             }
 
             sf::Vector2f previousLocationPosition = currentPlayerWhichHasToThrow->currentLocation->position;
@@ -320,14 +344,9 @@ void rollDiceButtonEventHandler(sf::RenderWindow& window)
             else if(currentProperty && currentProperty->owner != nullptr && currentProperty->owner == currentPlayerWhichHasToThrow) // the property is owned by the player who went there
             { 
                 currentRealEstate = dynamic_cast<RealEstate*>(currentProperty);
-                if(currentRealEstate)
+                if(currentRealEstate) // It's a real estate (houses can be bought)
                 {
-                    std::cout << "Real estate" << std::endl;
                     activateBuyHouseButtonIfPlayerCanBuyIt();
-                }
-                else
-                {
-                    std::cout << "No Real estate" << std::endl;
                 }
                     
             }
@@ -348,36 +367,62 @@ void rollDiceButtonEventHandler(sf::RenderWindow& window)
                             amountToPay = currentRealEstate->price*percentOfPropertyPriceWhichHasToBePaidWhenPropertyIsVisited/100 + currentRealEstate->houseAmount * currentRealEstate->price*percentOfRealEstatePriceWhichHasToBePaidPerHouseWhenRealEstateIsVisited/100;
                         }
                     }
-                     
-                    if(currentPlayerWhichHasToThrow->moneyAmount - amountToPay <=0) // Player has lost
+                    if(hasPlayerLost(currentPlayerWhichHasToThrow, amountToPay))
                     {
-                        removeCurrentPlayer();
                         return;
                     }
-                    else // Player pays
-                    {
-                        currentPlayerWhichHasToThrow->moneyAmount -= amountToPay;
-                        currentPlayerWhichHasToThrow->playerProfitAmountText->setString("-" + std::to_string(amountToPay));
-                        currentPlayerWhichHasToThrow->playerMoneyAmountText->setString(std::to_string(currentPlayerWhichHasToThrow->moneyAmount) + "RON");
-                    }
+                    currentPlayerWhichHasToThrow->moneyAmount -= amountToPay;
+                    currentPlayerWhichHasToThrow->playerProfitAmountText->setString("-" + std::to_string(amountToPay));
+                    currentPlayerWhichHasToThrow->playerMoneyAmountText->setString(std::to_string(currentPlayerWhichHasToThrow->moneyAmount) + "RON");
+
                     currentProperty->owner->moneyAmount += amountToPay;
                     currentProperty->owner->playerProfitAmountText->setString("+" + std::to_string(amountToPay));
                     currentProperty->owner->playerMoneyAmountText->setString(std::to_string(currentProperty->owner->moneyAmount) + "RON");
                     previousPlayerWhoGotMoneyFromOwningProperty = currentProperty->owner;
 
                 }
-                else if(!currentProperty) // Start, Jail or GoToJail
+                else if(!currentProperty) // Start, Jail, GoToJail, Tax, Gambling
                 {
-                    if(dynamic_cast<GoToJailLocation*>(locations[currentLocationIndex]))
+                    if(dynamic_cast<GoToJailLocation*>(locations[currentLocationIndex])) // Go to jail
                     {
                         currentPlayerWhichHasToThrow->isInJail = true;
                         currentPlayerWhichHasToThrow->uiRectangleShapePlayer->setPosition(sf::Vector2f(locations[20]->position.x + uiRectangleShapePlayerPositionOffset.x, locations[20]->position.y + uiRectangleShapePlayerPositionOffset.y));
                         currentPlayerWhichHasToThrow->currentLocation = locations[20];
+                        sf::Color colorOfPlayerInJail = sf::Color(currentPlayerWhichHasToThrow->color.r, currentPlayerWhichHasToThrow->color.g, currentPlayerWhichHasToThrow->color.b, colorOfPlayerInJailAlphaValue);
+                        currentPlayerWhichHasToThrow->uiRectangleShapePlayer->setColor(colorOfPlayerInJail);
                         std::cout << "Go to jail" << std::endl;
                     }
-                    else if(dynamic_cast<JailLocation*>(locations[currentLocationIndex]))
+                    else if(dynamic_cast<JailLocation*>(locations[currentLocationIndex])) // Visiting jail
                     {
                         std::cout << "Jail" << std::endl;
+                    }
+                    else if(dynamic_cast<TaxLocation*>(locations[currentLocationIndex])) // Tax
+                    {
+                        std::cout << "Anaf" << std::endl;
+                        for(Player* player : players)
+                        {
+                            if(hasPlayerLost(player, taxLocationAmount))
+                            {
+                                return;
+                            }
+                            player->moneyAmount -= taxLocationAmount;
+                            player->playerProfitAmountText->setString("-" + std::to_string(taxLocationAmount));
+                            player->playerMoneyAmountText->setString(std::to_string(player->moneyAmount) + "RON");
+
+                        }
+                    }
+                    else if(dynamic_cast<GamblingLocation*>(locations[currentLocationIndex])) // Gambling
+                    {
+                        std::cout << "GamblingLocation" << std::endl;
+                        int gamblingResult = getRadnomNumberBetweenTwoNumbersInclusive(minimumGamblingAmountProfit, maximumGamblingAmountProfit);
+                        if(hasPlayerLost(currentPlayerWhichHasToThrow, gamblingResult))
+                        {
+                            return;
+                        }
+                        currentPlayerWhichHasToThrow->moneyAmount += gamblingResult;
+                        currentPlayerWhichHasToThrow->playerProfitAmountText->setString(std::to_string(gamblingResult));
+                        currentPlayerWhichHasToThrow->playerMoneyAmountText->setString(std::to_string(currentPlayerWhichHasToThrow->moneyAmount) + "RON");
+
                     }
                 }
                 
