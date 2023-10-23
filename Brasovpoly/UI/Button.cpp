@@ -13,6 +13,9 @@ Button::Button(UIContainer& uiContainer, float x, float y, float width, float he
     
     sf::FloatRect textBounds = buttonText.getLocalBounds();
     
+    float textX = x + (width - textBounds.width) / 2.0f - textBounds.left;
+    float textY = y + (height - textBounds.height) / 2.0f - textBounds.top;
+    
     buttonText.setPosition
     (
         x + (width - buttonText.getLocalBounds().width) / 2,
@@ -20,15 +23,6 @@ Button::Button(UIContainer& uiContainer, float x, float y, float width, float he
     );
 
     setBorder(borderThickness, borderColor);
-}
-
-void Button::centerText()
-{
-    buttonText.setPosition
-    (
-        rectangleShape.getPosition().x + (rectangleShape.getSize().x - buttonText.getLocalBounds().width) / 2,
-        rectangleShape.getPosition().y + (rectangleShape.getSize().y - buttonText.getLocalBounds().height) / 2
-    );    
 }
 
 void Button::draw(sf::RenderWindow& window)

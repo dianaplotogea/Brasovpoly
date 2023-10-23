@@ -15,10 +15,6 @@ class Player
 public:
     int count;
     int moneyAmount;
-    int transportPropertyAmount = 0;
-    int numberOfTurnsSinceJail = 0;
-
-    bool isInJail = false;
 
     std::string name;
 

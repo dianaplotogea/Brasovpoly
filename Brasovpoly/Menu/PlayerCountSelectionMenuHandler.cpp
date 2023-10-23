@@ -51,7 +51,7 @@ void createPlayerCountSelectionMenu()
     }
 
     tutorialButton = new Button(playerCountSelectionMenu, windowWidth - tutorialButtonPadding - tutorialButtonSize, tutorialButtonPadding, tutorialButtonSize, tutorialButtonSize );
-    tutorialButtonUISprite = new UISprite(playerCountSelectionMenu, &tutorialButtonTexture, sf::Vector2f(windowWidth - tutorialButtonPadding - tutorialButtonSize, tutorialButtonPadding), sf::Vector2f(tutorialButtonSize, tutorialButtonSize) );
+    tutorialButtonUISprite = new UISprite(playerCountSelectionMenu, &tutorialButtonTexture, sf::Vector2f(windowWidth - tutorialButtonPadding - tutorialButtonSize, tutorialButtonPadding), sf::Vector2f(tutorialButtonSize, tutorialButtonSize)  );
     tutorialButton->uiSprite = tutorialButtonUISprite;
     spriteColorHoverButtons.push_back(tutorialButton);
 }

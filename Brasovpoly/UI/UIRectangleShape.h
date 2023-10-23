@@ -16,7 +16,6 @@ public:
     
 private:
     sf::RectangleShape rectangleShape;
-    std::vector<sf::RectangleShape> borders;
 };
 
 #endif
