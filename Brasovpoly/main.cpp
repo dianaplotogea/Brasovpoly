@@ -37,6 +37,7 @@ void buttonClickEvents(sf::RenderWindow& window, sf::Event event)
     rollDiceButtonEventHandler(window);
     buyPropertyButtonEventHandler(window);
     nextButtonEventHandler(window);
+    buyHouseButtonEventHandler(window);
     
 }
 

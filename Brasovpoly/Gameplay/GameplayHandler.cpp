@@ -6,6 +6,10 @@
 #include "../Globals.h"
 #include "GameOverHandler.h"
 #include "TimeHandler.h"
+#include "TransportProperty.h"
+#include "RealEstate.h"
+#include "GoToJailLocation.h"
+#include "JailLocation.h"
 #include <iostream>
 #include <random>
 #include <SFML/System/Clock.hpp>
@@ -26,10 +30,10 @@ int distanceBetweenPlayerNameTextsX = 300;
 int distanceBetweenPlayerNameTextsY = 175;
 int playerProfitAmountTextPositionY = 35;
 
-int initialMoneyAmount = 6000;
+int initialMoneyAmount = 3000;
 int playerMoneyAmountTextPositionY = 68;
 
-int currentPlayerIndex = 0;
+int currentPlayerIndex = -1;
 
 int percentOfPropertyPriceWhichHasToBePaidWhenPropertyIsVisited = 20;
 
@@ -38,13 +42,29 @@ int rollDiceResultMax = 12;
 
 float delayAfterWhichNextButtonBecomesPressableAfterBuyPropertyButtonWasPressed = 0.1;
 
+int percentOfRealEstatePriceWhichHasToBePaidToBuyAHouse = 20;
+int percentOfRealEstatePriceWhichHasToBePaidPerHouseWhenRealEstateIsVisited = 10;
+int numberOfHousesAfterWhichItsConsideredHotel = 4;
+int numberOfHousesPerRow = 2;
+int houseSpriteSize = 40;
+int hotelSpriteSize = 80;
+int houseSpritePositionY = 50;
+int hotelSpritePositionY = 45;
+
+int numberOfSkippedTurnsWhenPlayerisInJail = 3;
+
+
 Player* currentPlayerWhichHasToThrow;
 Player* previousPlayer;
 Player* previousPlayerWhoGotMoneyFromOwningProperty;
 
 Property* currentProperty;
+RealEstate* currentRealEstate;
 
 sf::Clock nextButtonActivatorClock;
+
+sf::Texture houseTexture;
+sf::Texture hotelTexture;
 
 void createPlayerRectangles()
 {
@@ -135,11 +155,12 @@ void startGameButtonEventHandler(sf::RenderWindow& window)
         inGameScene.showAll();
         buyPropertyButton->visible = false;
         nextButton->visible = false;
+        buyHouseButton->visible = false;
         gameOverText->visible = false;
         inGameClockText->visible = false;
         currentState = GameState::InGame;
-        createPlayerRectangles();
         createPlayerInfoTexts();
+        createPlayerRectangles();
         currentPlayerIndex = 0;
         if(currentPlayerIndex == players.size())
         {
@@ -157,13 +178,34 @@ void moveToNextPlayer()
     nextButton->visible = false;
     rollDiceButton->visible = true;
     buyPropertyButton->visible = false;
+    buyHouseButton->visible = false;
     previousPlayer = currentPlayerWhichHasToThrow;
+    currentPlayerIndex++;
     if(currentPlayerIndex >= players.size())
     {
         currentPlayerIndex = 0;
     }
-    currentPlayerWhichHasToThrow = players[currentPlayerIndex++];
-    resizeCurrentPlayerInfoTexts();
+    currentPlayerWhichHasToThrow = players[currentPlayerIndex];
+    
+    if(players[currentPlayerIndex]->isInJail)
+    {
+        players[currentPlayerIndex]->numberOfTurnsSinceJail++;
+        if(players[currentPlayerIndex]->numberOfTurnsSinceJail == numberOfSkippedTurnsWhenPlayerisInJail)
+        {
+            players[currentPlayerIndex]->numberOfTurnsSinceJail = 0;
+            players[currentPlayerIndex]->isInJail = false;
+        }
+        else
+        {
+            moveToNextPlayer();
+        }
+    }
+    else
+    {
+        resizeCurrentPlayerInfoTexts();
+    }
+    
+    
 }
 
 int getRadnomNumberBetweenTwoNumbersInclusive(int min, int max)
@@ -225,6 +267,13 @@ void removeCurrentPlayer()
 
         }
     }
+
+    playersInWinningOrder.insert(playersInWinningOrder.begin(), currentPlayerWhichHasToThrow);
+    if(players.size() == 1)
+    {
+        gameOver();
+        return;
+    }
 }
 
 void rollDiceButtonEventHandler(sf::RenderWindow& window)
@@ -268,20 +317,42 @@ void rollDiceButtonEventHandler(sf::RenderWindow& window)
                 buyPropertyButton->visible = true;
 
             }
+            else if(currentProperty && currentProperty->owner != nullptr && currentProperty->owner == currentPlayerWhichHasToThrow) // the property is owned by the player who went there
+            { 
+                currentRealEstate = dynamic_cast<RealEstate*>(currentProperty);
+                if(currentRealEstate)
+                {
+                    std::cout << "Real estate" << std::endl;
+                    activateBuyHouseButtonIfPlayerCanBuyIt();
+                }
+                else
+                {
+                    std::cout << "No Real estate" << std::endl;
+                }
+                    
+            }
             else
             {
-                if(currentProperty && currentProperty->owner != currentPlayerWhichHasToThrow && currentProperty->owner != nullptr) // Player has to pay
+                if(currentProperty && currentProperty->owner != nullptr && currentProperty->owner != currentPlayerWhichHasToThrow) // Player has to pay
                 {
-                    int amountToPay = currentProperty->price*percentOfPropertyPriceWhichHasToBePaidWhenPropertyIsVisited/100;
+                    int amountToPay = 0;
+                    if(dynamic_cast<TransportProperty*>(currentProperty))
+                    {
+                        amountToPay = currentProperty->price*percentOfPropertyPriceWhichHasToBePaidWhenPropertyIsVisited/100 * currentProperty->owner->transportPropertyAmount; // If the property is a transport type, the visitor has to pay the usual amount * the number of transport ptoprties owned by the owner
+                    }
+                    else
+                    {
+                        currentRealEstate = dynamic_cast<RealEstate*>(currentProperty);
+                        if(currentRealEstate)
+                        {
+                            amountToPay = currentRealEstate->price*percentOfPropertyPriceWhichHasToBePaidWhenPropertyIsVisited/100 + currentRealEstate->houseAmount * currentRealEstate->price*percentOfRealEstatePriceWhichHasToBePaidPerHouseWhenRealEstateIsVisited/100;
+                        }
+                    }
+                     
                     if(currentPlayerWhichHasToThrow->moneyAmount - amountToPay <=0) // Player has lost
                     {
                         removeCurrentPlayer();
-                        playersInWinningOrder.insert(playersInWinningOrder.begin(), currentPlayerWhichHasToThrow);
-                        if(players.size() == 1)
-                        {
-                            gameOver();
-                            return;
-                        }
+                        return;
                     }
                     else // Player pays
                     {
@@ -295,8 +366,23 @@ void rollDiceButtonEventHandler(sf::RenderWindow& window)
                     previousPlayerWhoGotMoneyFromOwningProperty = currentProperty->owner;
 
                 }
+                else if(!currentProperty) // Start, Jail or GoToJail
+                {
+                    if(dynamic_cast<GoToJailLocation*>(locations[currentLocationIndex]))
+                    {
+                        currentPlayerWhichHasToThrow->isInJail = true;
+                        currentPlayerWhichHasToThrow->uiRectangleShapePlayer->setPosition(sf::Vector2f(locations[20]->position.x + uiRectangleShapePlayerPositionOffset.x, locations[20]->position.y + uiRectangleShapePlayerPositionOffset.y));
+                        currentPlayerWhichHasToThrow->currentLocation = locations[20];
+                        std::cout << "Go to jail" << std::endl;
+                    }
+                    else if(dynamic_cast<JailLocation*>(locations[currentLocationIndex]))
+                    {
+                        std::cout << "Jail" << std::endl;
+                    }
+                }
+                
                 moveToNextPlayer();
-
+                    
             }
             nextButtonActivatorClock.restart();
 
@@ -314,6 +400,12 @@ void buyPropertyButtonEventHandler(sf::RenderWindow& window)
         currentProperty->propertyColorSquare->setColor(currentPlayerWhichHasToThrow->color);
         currentPlayerWhichHasToThrow->playerMoneyAmountText->setString(std::to_string(currentPlayerWhichHasToThrow->moneyAmount) + "RON");
         currentPlayerWhichHasToThrow->playerProfitAmountText->setString("-" + std::to_string(currentProperty->price));
+        
+        if(dynamic_cast<TransportProperty*>(currentProperty))
+        {
+            currentPlayerWhichHasToThrow->transportPropertyAmount++;
+        }
+
         moveToNextPlayer();
     }
 }
@@ -328,4 +420,122 @@ void nextButtonEventHandler(sf::RenderWindow& window)
     {
         moveToNextPlayer();
     }    
+}
+
+void moveElementBeforePlayerRectangleShapes(UIElement* uiElement)
+{
+    auto it = std::find(inGameScene.elements.begin(), inGameScene.elements.end(), uiElement);
+    if (it != inGameScene.elements.end())
+    {
+        auto new_pos = inGameScene.elements.end() - players.size() - 1;
+        if (it < new_pos)
+            std::rotate(it, it + 1, new_pos + 1);  // Move element to the right
+        else
+            std::rotate(new_pos, it, it + 1);  // Move element to the left
+        }
+    else
+    {
+        std::cout << "Object not found in the vector." << std::endl;
+    }     
+}
+
+void buyHouseButtonEventHandler(sf::RenderWindow& window)
+{
+    if(buyHouseButton->isMouseOver(window))
+    {
+        currentRealEstate->houseAmount++;
+        int housePrice = currentProperty->price*percentOfRealEstatePriceWhichHasToBePaidToBuyAHouse/100;
+        currentPlayerWhichHasToThrow->moneyAmount -= housePrice;
+        currentPlayerWhichHasToThrow->playerProfitAmountText->setString("-" + std::to_string(housePrice));
+        currentPlayerWhichHasToThrow->playerMoneyAmountText->setString(std::to_string(currentPlayerWhichHasToThrow->moneyAmount) + "RON");        
+
+        if(currentRealEstate->houseAmount == numberOfHousesAfterWhichItsConsideredHotel)
+        {
+            for(auto it = inGameScene.elements.begin(); it != inGameScene.elements.end();)
+            {
+                auto sprite = dynamic_cast<UISprite*>(*it);
+                if(std::find(currentRealEstate->houseSprites.begin(), currentRealEstate->houseSprites.end(), sprite) != currentRealEstate->houseSprites.end())
+                {
+                    delete sprite;
+                    it = inGameScene.elements.erase(it);
+                }
+                else
+                {
+                    ++it;
+                }
+            }
+
+            currentRealEstate->houseSprites.clear();
+            if(!hotelTexture.loadFromFile("Assets/Hotel.png"))
+            {
+                std::cerr << "Failed to load image" << std::endl;
+            }
+            UISprite* hotelSprite = new UISprite
+            (
+                inGameScene,
+                &hotelTexture,
+                sf::Vector2f
+                (
+                    currentRealEstate->propertyColorSquare->getPosition().x + (locationSize - hotelSpriteSize)/2,
+                    currentRealEstate->propertyColorSquare->getPosition().y + hotelSpritePositionY
+                ),
+                sf::Vector2f(hotelSpriteSize, hotelSpriteSize)
+            );
+
+            moveElementBeforePlayerRectangleShapes(hotelSprite); // It has to be moved before the uiRectangleShapePlayer, otherwise the uiRectangleShapePlayer will be beneath the sprite. The players were the last objects that were added into inGameScene.elements
+
+            inGameSceneUIElementsThatMustBeDeleted.push_back(hotelSprite);
+        }
+        else
+        {
+            if(!houseTexture.loadFromFile("Assets/House.png"))
+            {
+                std::cerr << "Failed to load image" << std::endl;
+            }
+
+            UISprite* houseSprite = new UISprite
+            (
+                inGameScene,
+                &houseTexture,
+                sf::Vector2f
+                (
+                    currentRealEstate->propertyColorSquare->getPosition().x + currentRealEstate->houseAmount * (locationSize - 3 * houseSpriteSize )/4 + (currentRealEstate->houseAmount-1) * houseSpriteSize,
+                    currentRealEstate->propertyColorSquare->getPosition().y + houseSpritePositionY
+                ),
+                sf::Vector2f(houseSpriteSize, houseSpriteSize)
+            );
+
+            moveElementBeforePlayerRectangleShapes(houseSprite); // It has to be moved before the uiRectangleShapePlayer, otherwise the uiRectangleShapePlayer will be beneath the sprite. The players were the last objects that were added into inGameScene.elements
+
+            inGameSceneUIElementsThatMustBeDeleted.push_back(houseSprite);
+            currentRealEstate->houseSprites.push_back(houseSprite);
+            
+        }
+        activateBuyHouseButtonIfPlayerCanBuyIt();
+
+    }
+}
+
+void activateBuyHouseButtonIfPlayerCanBuyIt()
+{
+    int housePrice = currentRealEstate->price*percentOfRealEstatePriceWhichHasToBePaidToBuyAHouse/100;
+    if(currentPlayerWhichHasToThrow->moneyAmount > housePrice && currentRealEstate->houseAmount < numberOfHousesAfterWhichItsConsideredHotel)
+    {
+        buyHouseButton->visible = true;
+        
+        if(currentRealEstate->houseAmount == numberOfHousesAfterWhichItsConsideredHotel-1)
+        {
+            buyHouseButton->buttonText.setString("Buy hotel(" + std::to_string(housePrice) + ")");
+            buyHouseButton->centerText();
+        }
+        else
+        {
+            buyHouseButton->buttonText.setString("Buy house(" + std::to_string(housePrice) + ")");
+            buyHouseButton->centerText();
+        }
+    }
+    else
+    {
+        moveToNextPlayer();
+    }
 }

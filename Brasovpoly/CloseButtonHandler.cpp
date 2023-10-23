@@ -5,6 +5,7 @@
 #include "UI/UiSprite.h"
 #include "UI/UIRectangleShape.h"
 #include "UI/UIText.h"
+#include "Gameplay/RealEstate.h"
 #include "Menu/PlayerSetupMenuHandler.h"
 
 int closeButtonSize = 45;
@@ -83,12 +84,24 @@ void closePlayerSetupMenu(sf::RenderWindow& window)
             case::GameState::InGame:
             {
                 inGameScene.hideAll();
+                for(Location* location : locations)
+                {
+                    Property* property = dynamic_cast<Property*>(location); 
+                    if(property)
+                    {
+                        property->owner = nullptr;
+                    }       
+                    
+                    RealEstate* realEstate = dynamic_cast<RealEstate*>(location);
+                    if(realEstate)
+                    {
+                        realEstate->houseSprites.clear();
+                    }
+                }
                 resetPlayerSetupMenu();
-
                 std::vector<UIElement*>::iterator it = inGameScene.elements.begin();
                 while (it != inGameScene.elements.end()) 
                 {
-
                     if(std::find(inGameSceneUIElementsThatMustBeDeleted.begin(), inGameSceneUIElementsThatMustBeDeleted.end(), *it) != inGameSceneUIElementsThatMustBeDeleted.end()) 
                     {
                         delete *it;
@@ -105,27 +118,12 @@ void closePlayerSetupMenu(sf::RenderWindow& window)
                 {
                     propertyColorSquare->setColor(sf::Color::Black);
                 }
-                for(Location* location : locations)
-                {
-                    Property* property = dynamic_cast<Property*>(location); 
-                    if(property)
-                    {
-                        property->owner = nullptr;
-                    }       
-                }
 
                 rollDiceResultText->setString("");
-        
-                for(UIText* leaderBoardNameText : leaderBoardNameTexts)
-                {
-                    leaderBoardNameText->setColor(sf::Color::Transparent); // Don't delete the object please, it will cause a crash, it has to be made transparent instead so it won't be visible next time
-            
-                }
-        
                 leaderBoardNameTexts.clear();
-
                 gameOverPlayingTimeText->setString("");
                 shouldInGameClockWork = false;
+                
                 break;
         
             }

@@ -11,7 +11,6 @@ sf::Font* getGlobalFont(); // A getter is needed in order to put it as a default
 #include "UI/UISprite.h"
 #include "UI/UIRectangleShape.h"
 #include "Gameplay/Location.h"
-#include "Gameplay/District.h"
 
 extern int windowWidth;
 extern int windowHeight;
@@ -19,6 +18,7 @@ extern int buttonWidth;
 extern int buttonHeight;
 extern int buttonBorderThickness;
 extern int backButtonPosition;
+extern int locationSize;
 
 extern bool shouldStartGameButtonBeActivated;
 extern bool shouldInGameClockWork;
@@ -40,6 +40,7 @@ extern Button* startGameButton;
 extern Button* rollDiceButton;
 extern Button* buyPropertyButton;
 extern Button* nextButton;
+extern Button* buyHouseButton;;
 
 extern std::vector<Button*> outlineColorHoverButtons;
 extern std::vector<Button*> spriteColorHoverButtons;
@@ -58,8 +59,6 @@ extern UISprite* tutorialButtonUISprite;
  
 extern std::vector<Player*> players;
 extern std::vector<Player*> playersInWinningOrder;
-
-extern std::vector<District> districts;
 
 extern std::vector<Location*> locations;
 

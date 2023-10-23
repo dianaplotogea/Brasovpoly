@@ -1,6 +1,10 @@
 #include "Globals.h"
 #include "Gameplay/Start.h"
 #include "Gameplay/Property.h"
+#include "Gameplay/TransportProperty.h"
+#include "Gameplay/RealEstate.h"
+#include "Gameplay/GoToJailLocation.h"
+#include "Gameplay/JailLocation.h"
 
 int windowWidth = 1530;
 int windowHeight = 960;
@@ -8,6 +12,7 @@ int buttonWidth = 200;
 int buttonHeight = 75;
 int buttonBorderThickness = 3;
 int backButtonPosition = 100;
+int locationSize = 150;
 
 bool shouldStartGameButtonBeActivated = false;
 bool shouldInGameClockWork = false;
@@ -36,6 +41,7 @@ Button* startGameButton;
 Button* rollDiceButton;
 Button* buyPropertyButton;
 Button* nextButton;
+Button* buyHouseButton;
 
 std::vector<Button*> outlineColorHoverButtons;
 std::vector<Button*> spriteColorHoverButtons;
@@ -55,54 +61,40 @@ UISprite* tutorialButtonUISprite;
 std::vector<Player*> players;
 std::vector<Player*> playersInWinningOrder;
 
-std::vector<District> districts
-{
-    District("Centru", sf::Color::White),
-    District("Bartolomeu", sf::Color::White),
-    District("Astra", sf::Color::White),
-    District("Tractorul", sf::Color::White),
-    District("Centrul nou", sf::Color::White),
-    District("Ragadau", sf::Color::White),
-    District("Poiana", sf::Color::White),
-    District("Noua", sf::Color::White),
-    District("Darste", sf::Color::White)
-};
-
 std::vector<Location*> locations
 {
     new Start(),
 
-    new Property("Piata Sfatului", districts[0], 5000),
-    new Property("Livada Postei", districts[0], 4500),
-    new Property("Primaria", districts[0], 3900),
+    new RealEstate("Piata Sfatului", 5000),
+    new RealEstate("Livada Postei", 4500),
+    new RealEstate("Primaria", 3900),
 
-    new Property("Gara Bartolomenu", districts[1], 100),
-    new Property("Biserica Bartolomeu", districts[1], 400),
-    new Property("Hornbach", districts[1], 50),
+    new TransportProperty("Gara", 100, "Train.png"),
+    new RealEstate("Biserica Bartolomeu", 400),
+    new RealEstate("Hornbach", 50),
 
-    new Property("Piata Astra", districts[2], 900),
-    new Property("Berzei", districts[2], 1000),
-    new Property("Lidl", districts[2], 1200),
+    new RealEstate("Piata Astra", 900),
+    
+    new GoToJailLocation(),
+    new RealEstate("Coresi", 2200),
+    new TransportProperty("RATBV", 100, "Bus.png"),
+    new RealEstate("Kaufland", 400),
+    new RealEstate("Kronwell", 500),
 
-    new Property("Coresi", districts[3], 2200),
-    new Property("Gara", districts[3], 400),
-    new Property("Kronwell", districts[3], 500),
+    
+    new RealEstate("eMAG", 3100),
+    new RealEstate("Spitalul Judetean", 2900),
+    new RealEstate("Dealul Melcilor", 1200),
+    new TransportProperty("Aeroport", 100, "Plane.png"),
+    new RealEstate("Decathlon", 900),
 
-    new Property("AFI", districts[4], 3300),
-    new Property("eMAG", districts[4], 3100),
-    new Property("Spitalul Judetean", districts[4], 2900),
+    new RealEstate("Belvedere", 4500),
 
-    new Property("Dealul Melcilor", districts[5], 1200),
-    new Property("Decathlon", districts[5], 900),
-
-    new Property("Postavarul", districts[6], 3500),
-    new Property("Belvedere", districts[6], 4500),
-
-    new Property("Gradina Zoologica", districts[7], 1200),
-    new Property("Lacul Noua", districts[7], 1500),
-
-    new Property("Carrefour", districts[8], 1000),
-    new Property("Jumbo", districts[8], 600),
+    new RealEstate("Gradina Zoologica", 1200),
+    new JailLocation(),
+    new RealEstate("Carrefour", 1000),
+    new TransportProperty("Martax", 100, "Taxi.png"),
+    new RealEstate("Jumbo", 600),
 
 };
 

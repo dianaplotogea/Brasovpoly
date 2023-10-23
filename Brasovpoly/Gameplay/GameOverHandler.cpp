@@ -19,6 +19,7 @@ void gameOver()
         UIText* leaderBoardNameText = new UIText(inGameScene, &font, leaderBoardCharacterSize, std::to_string(i+1) + ". " + playersInWinningOrder[i]->name, playersInWinningOrder[i]->color);
         leaderBoardNameText->setPosition(sf::Vector2f(windowWidth/2 - leaderBoardNameText->getLocalBounds().width/2, leaderBoardNameTextInitialPositionY + i*distanceBetweenLeaderBoardNameTexts));
         leaderBoardNameTexts.push_back(leaderBoardNameText);
+        inGameSceneUIElementsThatMustBeDeleted.push_back(leaderBoardNameText);
     }
     playersInWinningOrder.clear();
     shouldInGameClockWork = false;
