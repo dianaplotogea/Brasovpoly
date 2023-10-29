@@ -8,19 +8,21 @@ int inGameClockTextPositionY = 25;
 int inGameClockTextPaddingX = 80;
 int inGameClockTextCharacterSize = 40;
 
+
+
 void startInGameClock()
 {
-    shouldInGameClockWork = true;
+    globals.setShouldInGameClockWork(true);
     std::thread timerThread(displayTime);
     timerThread.detach(); // Allows the thread to execute independently from the thread object, making it 'daemon-like'
 }
 
 void displayTime()
 {
-    playingTimeClock->restart();
-    while(shouldInGameClockWork)
+    globals.getPlayingTimeClock()->restart();
+    while(globals.getShouldInGameClockWork())
     {
-        sf::Time elapsed = playingTimeClock->getElapsedTime();
+        sf::Time elapsed = globals.getPlayingTimeClock()->getElapsedTime();
 
         int totalSeconds = static_cast<int>(elapsed.asSeconds());
 
@@ -45,12 +47,12 @@ void displayTime()
         inGameClockTextString += seconds < 10 ? "0" : "";
         inGameClockTextString += std::to_string(seconds) + "s";
         
-        inGameClockText->setString(inGameClockTextString);
-        inGameClockText->setPosition(sf::Vector2f(windowWidth - inGameClockTextPaddingX - inGameClockText->getLocalBounds().width, inGameClockTextPositionY));
-        inGameClockText->setCharacterSize(inGameClockTextCharacterSize); // It has to be set here, if it's set when the text is created, sometimes the letter s becomes really small
+        globals.getInGameClockText()->setString(inGameClockTextString);
+        globals.getInGameClockText()->setPosition(sf::Vector2f(Globals::windowWidth - inGameClockTextPaddingX - globals.getInGameClockText()->getLocalBounds().width, inGameClockTextPositionY));
+        globals.getInGameClockText()->setCharacterSize(inGameClockTextCharacterSize); // It has to be set here, if it's set when the text is created, sometimes the letter s becomes really small
         if(totalSeconds >=1)
         {
-            inGameClockText->visible = true; // It has to be shown only when more than one seconds have passed, otherwise it won't be at the correct position
+            globals.getInGameClockText()->setVisible(true); // It has to be shown only when more than one seconds have passed, otherwise it won't be at the correct position
         }
         
         sf::sleep(sf::seconds(1));

@@ -25,7 +25,7 @@ void UISprite::setColor(sf::Color color)
 
 void UISprite::draw(sf::RenderWindow& window)
 {
-    if (visible)
+    if (isVisible())
     {
         window.draw(sprite);
     }

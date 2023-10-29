@@ -5,127 +5,127 @@
 #include "UI/UiSprite.h"
 #include "UI/UIRectangleShape.h"
 #include "UI/UIText.h"
+#include "Gameplay/RealEstate.h"
 #include "Menu/PlayerSetupMenuHandler.h"
 
-int closeButtonSize = 45;
-int closeButtonPadding = 30;
 
-sf::Texture closeButtonTexture;
 
-void createCloseButton()
+void CloseButtonHandler::createCloseButton()
 {   
     if(!closeButtonTexture.loadFromFile("Assets/BackButton.png"))
     {
         std::cerr << "Failed to load image" << std::endl;
     }
-    closeButton = new Button(emptyUIContainer, closeButtonPadding, closeButtonPadding, closeButtonSize, closeButtonSize);
-    closeButtonUISpritePlayerCountSelectionMenu = new UISprite(emptyUIContainer, &closeButtonTexture, sf::Vector2f(closeButtonPadding, closeButtonPadding), sf::Vector2f(closeButtonSize, closeButtonSize));
-    closeButton->uiSprite = closeButtonUISpritePlayerCountSelectionMenu;
-    spriteColorHoverButtons.push_back(closeButton);
+    globals.setCloseButton(new Button(globals.getEmptyUIContainer(), closeButtonPadding, closeButtonPadding, closeButtonSize, closeButtonSize));
+    globals.setCloseButtonUISpritePlayerCountSelectionMenu(new UISprite(globals.getEmptyUIContainer(), &closeButtonTexture, sf::Vector2f(closeButtonPadding, closeButtonPadding), sf::Vector2f(closeButtonSize, closeButtonSize)));
+    globals.getCloseButton()->setUiSprite(globals.getCloseButtonUISpritePlayerCountSelectionMenu());
+    globals.getSpriteColorHoverButtons().push_back(globals.getCloseButton());
     
 }
 
 void resetPlayerSetupMenu()
 {
-    players.clear();
-    std::vector<UIElement*> uiElements = playerSetupMenu.elements;
+    std::cout << "resetPlayerSetupMenu()" << std::endl;
+    globals.getPlayers().clear();
+    std::vector<UIElement*> uiElements = globals.getPlayerSetupMenu().getElements();
+    std::cout << "std::vector<UIElement*> uiElements = playerSetupMenu.getElements();" << std::endl;
     for(UIElement* uiElement : uiElements)
     {
-        if(uiElement == startGameButton)
+        if(uiElement == globals.getStartGameButton())
         {
             continue;
         }
-        auto it = std::find(outlineColorHoverButtons.begin(), outlineColorHoverButtons.end(), uiElement);
-        if(it != outlineColorHoverButtons.end())
+        auto it = std::find(globals.getOutlineColorHoverButtons().begin(), globals.getOutlineColorHoverButtons().end(), uiElement);
+        if(it != globals.getOutlineColorHoverButtons().end())
         {
-            outlineColorHoverButtons.erase(it);
+            globals.getOutlineColorHoverButtons().erase(it);
             
         }
         delete uiElement;
         
                     
     }
-    playerSetupMenu.elements.clear();
-    playerCountSelectionMenu.showAll();
-    currentState = GameState::PlayerCountSelection;
-    shouldStartGameButtonBeActivated = false;
-    createStartGameButton(); // This shouldn't be here, but the startGameButton is somehow destroyed and won't appear otherwise
+    globals.getPlayerSetupMenu().clearElements();
+    std::cout << "playerSetupMenu.clearElements();" << std::endl;
+    globals.getPlayerCountSelectionMenu().showAll();
+    globals.setCurrentState(Globals::GameState::PlayerCountSelection);
+    globals.setShouldStartGameButtonBeActivated(false);
+    PlayerSetupMenuHandler playerSetupMenuHandler;
+    playerSetupMenuHandler.createStartGameButton(); // This shouldn't be here, but the startGameButton is somehow destroyed and won't appear otherwise
 }
 
-void closePlayerSetupMenu(sf::RenderWindow& window)
+void CloseButtonHandler::closePlayerSetupMenu(sf::RenderWindow& window)
 {
-    if(closeButton->isMouseOver(window))
+    if(globals.getCloseButton()->isMouseOver(window))
     {
-        switch(currentState)
+        switch(globals.getCurrentState())
         {
-            case GameState::PlayerSetup:
+            case Globals::GameState::PlayerSetup:
             {
                 std::cout << "Back from PlayerSetup menu" << std::endl;
                 resetPlayerSetupMenu();
                 break;
             }
-            case GameState::TutorialMenu:
+            case Globals::GameState::TutorialMenu:
             {
                 std::cout << "Back from Tutorial menu" << std::endl;
-                currentState = GameState::PlayerCountSelection;
-                playerCountSelectionMenu.showAll();
-                tutorialMenu.hideAll();
+                globals.setCurrentState(Globals::GameState::PlayerCountSelection);
+                globals.getPlayerCountSelectionMenu().showAll();
+                globals.getTutorialMenu().hideAll();
                 break;
             }
-            case GameState::PlayerColorSelection:
+            case Globals::GameState::PlayerColorSelection:
             {
-                playerSetupMenu.showAll();
-                playerColorSelectorMenu.hideAll();
-                currentState = GameState::PlayerSetup;
-                activateStartGameButtonIfAllPlayersAreSet();
+                globals.getPlayerSetupMenu().showAll();
+                globals.getPlayerColorSelectorMenu().hideAll();
+                globals.setCurrentState(Globals::GameState::PlayerSetup);
+                PlayerSetupMenuHandler playerSetupMenuHandler;
+                playerSetupMenuHandler.activateStartGameButtonIfAllPlayersAreSet();
                 break;
             }
-            case::GameState::InGame:
+            case::Globals::GameState::InGame:
             {
-                inGameScene.hideAll();
-                resetPlayerSetupMenu();
-
-                std::vector<UIElement*>::iterator it = inGameScene.elements.begin();
-                while (it != inGameScene.elements.end()) 
+                globals.getInGameScene().hideAll();
+                for(Location* location : globals.getLocations())
                 {
-
-                    if(std::find(inGameSceneUIElementsThatMustBeDeleted.begin(), inGameSceneUIElementsThatMustBeDeleted.end(), *it) != inGameSceneUIElementsThatMustBeDeleted.end()) 
+                    Property* property = dynamic_cast<Property*>(location); 
+                    if(property)
+                    {
+                        property->setOwner(nullptr);
+                    }       
+                    
+                    RealEstate* realEstate = dynamic_cast<RealEstate*>(location);
+                    if(realEstate)
+                    {
+                        realEstate->clearHouseSprites();
+                    }
+                }
+                resetPlayerSetupMenu();
+                std::vector<UIElement*>::iterator it = globals.getInGameScene().getElements().begin();
+                while (it != globals.getInGameScene().getElements().end()) 
+                {
+                    if(std::find(globals.getInGameSceneUIElementsThatMustBeDeleted().begin(), globals.getInGameSceneUIElementsThatMustBeDeleted().end(), *it) != globals.getInGameSceneUIElementsThatMustBeDeleted().end()) 
                     {
                         delete *it;
-                        it = inGameScene.elements.erase(it);
+                        it = globals.getInGameScene().getElements().erase(it);
                     } 
                     else 
                     {
                         ++it;
                     }
                 }
-                inGameSceneUIElementsThatMustBeDeleted.clear();
+                globals.getInGameSceneUIElementsThatMustBeDeleted().clear();
 
-                for(UIRectangleShape* propertyColorSquare : propertyColorSquares)
+                for(UIRectangleShape* propertyColorSquare : globals.getPropertyColorSquares())
                 {
                     propertyColorSquare->setColor(sf::Color::Black);
                 }
-                for(Location* location : locations)
-                {
-                    Property* property = dynamic_cast<Property*>(location); 
-                    if(property)
-                    {
-                        property->owner = nullptr;
-                    }       
-                }
 
-                rollDiceResultText->setString("");
-        
-                for(UIText* leaderBoardNameText : leaderBoardNameTexts)
-                {
-                    leaderBoardNameText->setColor(sf::Color::Transparent); // Don't delete the object please, it will cause a crash, it has to be made transparent instead so it won't be visible next time
-            
-                }
-        
-                leaderBoardNameTexts.clear();
-
-                gameOverPlayingTimeText->setString("");
-                shouldInGameClockWork = false;
+                globals.getRollDiceResultText()->setString("");
+                globals.getLeaderBoardNameTexts().clear();
+                globals.getGameOverPlayingTimeText()->setString("");
+                globals.setShouldInGameClockWork(false);
+                
                 break;
         
             }

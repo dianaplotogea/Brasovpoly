@@ -6,9 +6,13 @@
 class TransportProperty : public Property
 {
 public:
-    std::string imageFileName;
     TransportProperty(std::string nameParam, int priceParam, std::string imageFileNameParam)
         : Property(nameParam, priceParam), imageFileName(imageFileNameParam)  {}
+
+    std::string getImageFileName();
+
+private:
+    std::string imageFileName;
 };
 
 #endif

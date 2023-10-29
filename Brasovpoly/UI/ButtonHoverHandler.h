@@ -3,6 +3,12 @@
 
 #include <SFML/Graphics.hpp>
 
-void buttonHover(sf::RenderWindow& window);
+class ButtonHoverHandler
+{
+public:
+    void buttonHover(sf::RenderWindow& window);
+private:
+    sf::Color buttonHoverColor = {128, 128, 128};
+};
 
 #endif

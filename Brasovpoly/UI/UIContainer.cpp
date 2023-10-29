@@ -1,6 +1,10 @@
 #include <iostream>
 #include "UIContainer.h"    
 #include "UIElement.h"
+
+std::vector<UIElement*>& UIContainer::getElements(){
+    return elements;
+}
     
 void UIContainer::addElement(UIElement* element)
 {
@@ -18,7 +22,7 @@ void UIContainer::draw(sf::RenderWindow& window)
 void UIContainer::hideAll() {
     for (auto element : elements)
     {
-        element->visible = false;
+        element->setVisible(false);
     }
 }
 
@@ -26,6 +30,10 @@ void UIContainer::showAll()
 {
     for (auto element : elements)
     {
-        element->visible = true;
+        element->setVisible(true);
     }
+}
+
+void UIContainer::clearElements(){
+    elements.clear();
 }

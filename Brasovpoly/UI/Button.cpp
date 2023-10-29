@@ -13,9 +13,6 @@ Button::Button(UIContainer& uiContainer, float x, float y, float width, float he
     
     sf::FloatRect textBounds = buttonText.getLocalBounds();
     
-    float textX = x + (width - textBounds.width) / 2.0f - textBounds.left;
-    float textY = y + (height - textBounds.height) / 2.0f - textBounds.top;
-    
     buttonText.setPosition
     (
         x + (width - buttonText.getLocalBounds().width) / 2,
@@ -25,9 +22,18 @@ Button::Button(UIContainer& uiContainer, float x, float y, float width, float he
     setBorder(borderThickness, borderColor);
 }
 
+void Button::centerText()
+{
+    buttonText.setPosition
+    (
+        rectangleShape.getPosition().x + (rectangleShape.getSize().x - buttonText.getLocalBounds().width) / 2,
+        rectangleShape.getPosition().y + (rectangleShape.getSize().y - buttonText.getLocalBounds().height) / 2
+    );    
+}
+
 void Button::draw(sf::RenderWindow& window)
 {
-    if (visible)
+    if (isVisible())
     {
         window.draw(rectangleShape);
         window.draw(buttonText);
@@ -37,7 +43,7 @@ void Button::draw(sf::RenderWindow& window)
 
 bool Button::isMouseOver(sf::RenderWindow& window)
 {
-    if (!visible)
+    if (!isVisible())
     {
         return false; // otherwise the button will be clicked when it isn't even visible
     }
@@ -63,4 +69,34 @@ void Button::setBorder(float borderThickness, sf::Color borderColor)
 {
     rectangleShape.setOutlineColor(borderColor);
     rectangleShape.setOutlineThickness(borderThickness);
+}
+
+sf::RectangleShape& Button::getRectangleShape()
+{
+    return rectangleShape;
+}
+
+void Button::setRectangleShape(sf::RectangleShape rectangleShapeParam)
+{
+    rectangleShape = rectangleShapeParam;
+}
+
+UISprite* Button::getUISprite()
+{
+    return uiSprite;
+}
+
+void Button::setUiSprite(UISprite* uiSpriteParam)
+{
+    uiSprite = uiSpriteParam;
+}
+
+sf::Text& Button::getText()
+{
+    return buttonText;
+}
+
+void Button::setText(sf::Text buttonTextParam)
+{
+    buttonText = buttonTextParam;
 }

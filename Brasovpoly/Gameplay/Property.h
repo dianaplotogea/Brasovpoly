@@ -1,27 +1,35 @@
 #ifndef PROPERTY_H
 #define PROPERTY_H
 
-#include "District.h"
 #include "Location.h"
+#include "../UI/UIRectangleShape.h"
 
 class Player; // Player includes Property as well so forward declaration is needed
 
 class Property : public Location
 {
 public:
+    Property(std::string nameParam, int priceParam)
+    : name(nameParam), price(priceParam), owner(nullptr) {}; // An object is not nullptr by default, so it has to be set to nullptr here
+
+    int getPrice();
+
+    std::string getName();
+
+    Player* getOwner();
+    void setOwner(Player* ownerParam);
+
+    UIRectangleShape* getPropertyColorSquare();
+    void setPropertyColorSquare(UIRectangleShape* propertyColorSquareParam);
+
+private:
     int price;
 
     std::string name;
 
     UIRectangleShape* propertyColorSquare;
 
-    District district;
-
-    Player* owner; // It has to be marked with *, because it's not present in the constructor
-
-    Property(std::string nameParam, District districtParam, int priceParam)
-    : name(nameParam), district(districtParam), price(priceParam), owner(nullptr) {}; // An object is not nullptr by default, so it has to be set to nullptr here
-
+    Player* owner;
 };
 
 #endif

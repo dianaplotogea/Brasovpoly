@@ -3,7 +3,18 @@
 
 #include <SFML/Graphics.hpp>
 
-void createCloseButton();
-void closePlayerSetupMenu(sf::RenderWindow& window);
+class CloseButtonHandler
+{
+public:
+    void createCloseButton();
+    void closePlayerSetupMenu(sf::RenderWindow& window);
+private:
+    int closeButtonSize = 45;
+    int closeButtonPadding = 30;
+
+    sf::Texture closeButtonTexture;
+};
+
+
 
 #endif

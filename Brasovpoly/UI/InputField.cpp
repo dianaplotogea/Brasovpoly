@@ -3,10 +3,7 @@
 #include "InputField.h"
 #include "UIContainer.h"
 
-float distanceBetweenCursorAndText = 0.75;
-float boxHeightToCursorHeightRatio = 0.75;
-float cursorWidth = 2.5;
-float cursorTickFrequency = 0.85;
+
 
 InputField::InputField(UIContainer& uiContainer, float x, float y, float width, float height, sf::Font& font) : UIElement(uiContainer)
 {
@@ -20,12 +17,12 @@ InputField::InputField(UIContainer& uiContainer, float x, float y, float width, 
     box.setFillColor(sf::Color::White);
 
     cursor = new UIRectangleShape(uiContainer, sf::Vector2f(x + distanceBetweenCursorAndText, box.getPosition().y + (box.getSize().y-box.getSize().y*boxHeightToCursorHeightRatio)/2 ), sf::Vector2f(cursorWidth, height*boxHeightToCursorHeightRatio), sf::Color::Black);
-    cursor->visible = false;
+    cursor->setVisible(false);
 }
 
 void InputField::draw(sf::RenderWindow& window)
 {
-    if (visible)
+    if (isVisible())
     {
         window.draw(box);
         window.draw(text);
@@ -47,7 +44,7 @@ void InputField::setSelected(bool isSelected)
     else
     {
         isTicking = false;
-        cursor->visible = false;
+        cursor->setVisible(false);
     }
     selected = isSelected;
 }
@@ -57,16 +54,16 @@ void InputField::displayCursor(InputField* inputField)
     inputField->cursorClock.restart();
     while(inputField->selected)
     {
-        inputField->cursor->visible = !inputField->cursor->visible;
+        inputField->cursor->setVisible(!inputField->cursor->isVisible());
         inputField->cursor->setPosition
         (
             sf::Vector2f
             (
-                inputField->box.getPosition().x + distanceBetweenCursorAndText + inputField->text.getLocalBounds().width,
-                inputField->box.getPosition().y + (inputField->box.getSize().y-(inputField->box.getSize().y*boxHeightToCursorHeightRatio))/2 
+                inputField->box.getPosition().x + inputField->distanceBetweenCursorAndText + inputField->text.getLocalBounds().width,
+                inputField->box.getPosition().y + (inputField->box.getSize().y-(inputField->box.getSize().y*inputField->boxHeightToCursorHeightRatio))/2 
             )
         );
-        sf::sleep(sf::seconds(cursorTickFrequency));
+        sf::sleep(sf::seconds(inputField->cursorTickFrequency));
     }
 }
 

@@ -8,12 +8,15 @@ class UIElement; // Forward declaration
 class UIContainer
 {
 public:
-    std::vector<UIElement*> elements;
-
+    std::vector<UIElement*>& getElements();
     void addElement(UIElement* element);
     void draw(sf::RenderWindow& window);
     void hideAll();
     void showAll();
+    void clearElements();
+
+private:
+    std::vector<UIElement*> elements;
     
 };
 
