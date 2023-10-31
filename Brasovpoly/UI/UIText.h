@@ -7,7 +7,7 @@
 class UIText : public UIElement
 {
 public:
-    UIText(UIContainer& uiContainer, sf::Font* font = nullptr, int characterSize = 20, const std::string& text = "", sf::Color color = sf::Color::White);
+    UIText(UIContainer& uiContainer, sf::Font* font = getGlobalFont(), int characterSize = 20, const std::string& text = "", sf::Color color = sf::Color::White);
     void draw(sf::RenderWindow& window) override;
     sf::FloatRect getLocalBounds() const;
     void setOrigin(float x, float y);

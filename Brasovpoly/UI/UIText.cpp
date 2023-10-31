@@ -21,7 +21,7 @@ void UIText::setOrigin(float x, float y)
 
 void UIText::draw(sf::RenderWindow& window)
 {
-    if (isVisible())
+    if (visible)
     {
         window.draw(text);
     }

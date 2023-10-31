@@ -21,13 +21,9 @@ void UIRectangleShape::setPosition(sf::Vector2f position)
 
 void UIRectangleShape::draw(sf::RenderWindow& window)
 {
-    if (isVisible())
+    if (visible)
     {
         window.draw(rectangleShape);
-        for(sf::RectangleShape border : borders)
-        {
-            window.draw(border);
-        }
     }
 }
 

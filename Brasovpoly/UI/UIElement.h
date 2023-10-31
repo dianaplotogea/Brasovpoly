@@ -8,12 +8,10 @@ class UIContainer;
 class UIElement
 {
 public:
+
     UIElement(UIContainer& uiContainer);
-    virtual void draw(sf::RenderWindow& window) = 0;
-    bool isVisible();
-    void setVisible(bool visibleParam);
-private:
     bool visible = true;
+    virtual void draw(sf::RenderWindow& window) = 0;
     
 };
 

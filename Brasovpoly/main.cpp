@@ -2,7 +2,9 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include "UI/Button.h"
 #include "UI/UIContainer.h"
+#include "UI/UIText.h"
 #include "Menu/PlayerCountSelectionMenuHandler.h"
 #include "Menu/PlayerSetupMenuHandler.h"
 #include "Menu/PlayerColorSelector.h"
@@ -13,47 +15,37 @@
 #include "UI/ButtonHoverHandler.h"
 #include "Globals.h"
 
-CloseButtonHandler closeButtonHandler;
-GameplayHandler gameplayHandler;
-TutorialMenuHandler tutorialMenuHandler;
-InGameSceneCreator inGameSceneCreator;
-PlayerColorSelector playerColorSelector;
-PlayerCountSelectionMenuHandler playerCountSelectionMenuHandler;
-PlayerSetupMenuHandler playerSetupMenuHandler;
-
-
 void createGUI()
 {
-    closeButtonHandler.createCloseButton();
-    tutorialMenuHandler.createTutorialMenu();
-    playerCountSelectionMenuHandler.createPlayerCountSelectionMenu();
-    playerColorSelector.createColorSelectorMenu();
-    playerSetupMenuHandler.createStartGameButton();
-    inGameSceneCreator.createInGameScene();
+    createCloseButton();
+    createTutorialMenu();
+    createPlayerCountSelectionMenu();
+    createColorSelectorMenu();
+    createStartGameButton();
+    createInGameScene();
 }
 
 void buttonClickEvents(sf::RenderWindow& window, sf::Event event)
 {
-    tutorialMenuHandler.tutorialButtonEventHandler(window);
-    playerCountSelectionMenuHandler.playerCountSelectionButtonsEventHandler(window);
-    closeButtonHandler.closePlayerSetupMenu(window);   
-    playerSetupMenuHandler.selectPlayerSetupMenuInput(window, event);
-    playerColorSelector.colorButtonEventHandler(window);     
-    playerColorSelector.colorSelectorButtonEventHandler(window);
-    gameplayHandler.startGameButtonEventHandler(window);
-    gameplayHandler.rollDiceButtonEventHandler(window);
-    gameplayHandler.buyPropertyButtonEventHandler(window);
-    gameplayHandler.nextButtonEventHandler(window);
-    gameplayHandler.buyHouseButtonEventHandler(window);
+    tutorialButtonEventHandler(window);
+    playerCountSelectionButtonsEventHandler(window);
+    closePlayerSetupMenu(window);   
+    selectPlayerSetupMenuInput(window, event);
+    colorButtonEventHandler(window);     
+    colorSelectorButtonEventHandler(window);
+    startGameButtonEventHandler(window);
+    rollDiceButtonEventHandler(window);
+    buyPropertyButtonEventHandler(window);
+    nextButtonEventHandler(window);
     
 }
 
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(Globals::windowWidth, Globals::windowHeight), "Brasovpoly");
+    sf::RenderWindow window(sf::VideoMode(windowWidth, windowHeight), "Brasovpoly");
 
-    if (!globals.getGlobalFont()->loadFromFile("Assets/arial.ttf"))
+    if (!font.loadFromFile("Assets/arial.ttf"))
     {
         std::cerr << "Could not load font" << std::endl;
         return 1;
@@ -72,9 +64,8 @@ int main()
             {
                 window.close(); // It is needed for the X button to work
             }
-            
-            ButtonHoverHandler ButtonHoverHandler;    
-            ButtonHoverHandler.buttonHover(window);
+                
+            buttonHover(window);
 
             if (event.type == sf::Event::MouseButtonPressed)
             {
@@ -82,22 +73,22 @@ int main()
             }
             else if (event.type == sf::Event::TextEntered)
             {
-                playerSetupMenuHandler.handleEnteredTextSelectPlayerSetupMenu(event);
+                handleEnteredTextSelectPlayerSetupMenu(event);
             }
         }
 
         window.clear();
 
-        globals.getPlayerCountSelectionMenu().draw(window);
-        globals.getTutorialMenu().draw(window);
-        globals.getPlayerSetupMenu().draw(window);
-        globals.getPlayerColorSelectorMenu().draw(window);
-        globals.getInGameScene().draw(window);
+        playerCountSelectionMenu.draw(window);
+        tutorialMenu.draw(window);
+        playerSetupMenu.draw(window);
+        playerColorSelectorMenu.draw(window);
+        inGameScene.draw(window);
         
-        if(globals.getCurrentState() != Globals::GameState::PlayerCountSelection)
+        if(currentState != GameState::PlayerCountSelection)
         {
-            globals.getCloseButton()->draw(window);
-            globals.getCloseButtonUISpritePlayerCountSelectionMenu()->draw(window);
+            closeButton->draw(window);
+            closeButtonUISpritePlayerCountSelectionMenu->draw(window);
         }
 
         window.display();

@@ -1,5 +1,5 @@
-#ifndef INPUT_FIELD_H
-#define INPUT_FIELD_H
+#ifndef UIINPUT_TEXT_H
+#define UIINPUT_TEXT_H
 
 #include "UIElement.h"
 #include "UIRectangleShape.h"
@@ -17,21 +17,12 @@ public:
     bool operator<(const InputField& other) const;
 
 private:
-    float distanceBetweenCursorAndText = 0.75;
-    float boxHeightToCursorHeightRatio = 0.75;
-    float cursorWidth = 2.5;
-    float cursorTickFrequency = 0.85;
-
     bool selected = false;
     bool isTicking = false;
-
     sf::Text inputText;
     sf::Text text;
-
     sf::RectangleShape box;
-
     UIRectangleShape* cursor;
-
     sf::Clock cursorClock;
     
 };

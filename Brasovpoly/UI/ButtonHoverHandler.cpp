@@ -1,31 +1,31 @@
 #include "ButtonHoverHandler.h"
 #include "Button.h"
 
+sf::Color buttonHoverColor = {128, 128, 128};
 
-
-void ButtonHoverHandler::buttonHover(sf::RenderWindow& window)
+void buttonHover(sf::RenderWindow& window)
 {
-    for(Button* outlineColorHoverButton : globals.getOutlineColorHoverButtons())
+    for(Button* outlineColorHoverButton : outlineColorHoverButtons)
     {
         if(outlineColorHoverButton->isMouseOver(window))
         {
-            outlineColorHoverButton->getRectangleShape().setOutlineColor(buttonHoverColor);
+            outlineColorHoverButton->rectangleShape.setOutlineColor(buttonHoverColor);
         }
         else
         {
-            outlineColorHoverButton->getRectangleShape().setOutlineColor(globals.getButtonBorderColor());
+            outlineColorHoverButton->rectangleShape.setOutlineColor(buttonBorderColor);
         }
     }
 
-    for(Button* spriteColorHoverButton : globals.getSpriteColorHoverButtons())
+    for(Button* spriteColorHoverButton : spriteColorHoverButtons)
     {
         if(spriteColorHoverButton->isMouseOver(window))
         {
-            spriteColorHoverButton->getUISprite()->setColor(buttonHoverColor);
+            spriteColorHoverButton->uiSprite->setColor(buttonHoverColor);
         }
         else
         {
-            spriteColorHoverButton->getUISprite()->setColor(sf::Color::White);
+            spriteColorHoverButton->uiSprite->setColor(sf::Color::White);
         }
     }
 }

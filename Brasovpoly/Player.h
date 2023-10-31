@@ -13,73 +13,8 @@ class UIText; // UIText includes Globals.h and Globals.h includes Player
 class Player
 {
 public:
-    Player(int countParam, UIText* playerIndexTextParam, InputField* inputFieldParam, Button* colorButtonParam, sf::Color colorParam) 
-    : count(countParam), playerIndexText(playerIndexTextParam), inputField(inputFieldParam), colorButton(colorButtonParam), color(colorParam) {};
-
-    void setMoneyAmount(int moneyAmountParam);
-
-    int getMoneyAmount();
-
-    int getCount();
-
-    int getTransportPropertyAmount();
-
-    void incrementTransportPropertyAmount();
-
-    int getNumberOfTurnsSinceJail();
-
-    void setNumberOfTurnsSinceJail(int numberOfTurnsSinceJailParam);
-
-    void incrementNumberOfTurnsSinceJail();
-
-    bool getIsInJail();
-
-    void setIsInJail(bool isInJailParam);
-
-    std::string getName();
-
-    void setName(std::string nameParam);
-    sf::Color getColor();
-
-    void setColor(sf::Color colorParam);
-
-    UIText* getPlayerIndexText();
-
-    UIText* getPlayerNameText();
-
-    void setPlayerNameText(UIText* playerNameTextParam);
-
-    UIText* getPlayerMoneyAmountText();
-
-    void setPlayerMoneyAmountText(UIText* playerMoneyAmountTextParam);
-
-    UIText* getPlayerProfitAmountText();
-
-    void setPlayerProfitAmountText(UIText* playerProfitAmountTextParam);
-
-    UIRectangleShape* getUiRectangleShapePlayer();
-
-    void setUiRectangleShapePlayer(UIRectangleShape* uiRectangleShapePlayerParam);
-
-    Location* getCurrentLocation();
-
-    void setCurrentLocation(Location* currentLocationParam);
-
-    std::vector<Property*> getOwnedProperties();
-
-    void addProperty(Property* property);
-
-    InputField* getInputField();
-
-    Button* getColorButton();
-
-private:
     int count;
     int moneyAmount;
-    int transportPropertyAmount = 0;
-    int numberOfTurnsSinceJail = 0;
-
-    bool isInJail = false;
 
     std::string name;
 
@@ -92,13 +27,16 @@ private:
 
     UIRectangleShape* uiRectangleShapePlayer;
 
-    Location* currentLocation;
+    Location * currentLocation;
 
     std::vector<Property*> ownedProperties;
 
     InputField* inputField;
-
+    
     Button* colorButton;
+
+    Player(int countParam, UIText* playerIndexTextParam, InputField* inputFieldParam, Button* colorButtonParam, sf::Color colorParam) 
+    : count(countParam), playerIndexText(playerIndexTextParam), inputField(inputFieldParam), colorButton(colorButtonParam), color(colorParam) {};
 
 };
 

@@ -1,304 +1,126 @@
 #include "Globals.h"
+#include "Gameplay/Start.h"
+#include "Gameplay/Property.h"
 
+int windowWidth = 1530;
+int windowHeight = 960;
+int buttonWidth = 200;
+int buttonHeight = 75;
+int buttonBorderThickness = 3;
+int backButtonPosition = 100;
 
-Globals globals;
+bool shouldStartGameButtonBeActivated = false;
+bool shouldInGameClockWork = false;
 
-bool Globals::getShouldStartGameButtonBeActivated()
-{
-    return shouldStartGameButtonBeActivated;
-}
+UIContainer playerCountSelectionMenu;
+UIContainer tutorialMenu;
+UIContainer playerSetupMenu;
+UIContainer playerColorSelectorMenu;
+UIContainer inGameScene;
 
-void Globals::setShouldStartGameButtonBeActivated(bool shouldStartGameButtonBeActivatedParam)
-{
-    shouldStartGameButtonBeActivated = shouldStartGameButtonBeActivatedParam;
-}
+sf::Font font;
 
-bool Globals::getShouldInGameClockWork()
-{
-    return shouldInGameClockWork;
-}
-
-void Globals::setShouldInGameClockWork(bool shouldInGameClockWorkParam)
-{
-    shouldInGameClockWork = shouldInGameClockWorkParam;
-}
-
-UIContainer& Globals::getPlayerCountSelectionMenu()
-{
-    return playerCountSelectionMenu;
-}
-
-void Globals::setPlayerCountSelectionMenu(UIContainer playerCountSelectionMenuParam)
-{
-    playerCountSelectionMenu = playerCountSelectionMenuParam;
-}
-
-UIContainer& Globals::getTutorialMenu()
-{
-    return tutorialMenu;
-}
-
-UIContainer& Globals::getPlayerSetupMenu()
-{
-    return playerSetupMenu;
-}
-
-UIContainer& Globals::getPlayerColorSelectorMenu()
-{
-    return playerColorSelectorMenu;
-}
-
-UIContainer& Globals::getInGameScene()
-{
-    return inGameScene;
-}
-
-UIContainer& Globals::getEmptyUIContainer()
-{
-    return emptyUIContainer;
-}
-
-sf::Font* Globals::getGlobalFont()
+sf::Font* getGlobalFont()
 {
     return &font;
 }
 
-sf::Color Globals::getButtonColor()
-{
-    return buttonColor;
-}
+sf::Color buttonColor = sf::Color::Black;
+sf::Color buttonBorderColor = sf::Color::White;
 
-sf::Color Globals::getButtonBorderColor()
-{
-    return buttonBorderColor;
-}
+UIContainer emptyUIContainer;
 
-std::vector<Location*>& Globals::getLocations()
-{
-    return locations;
-}
+Button* tutorialButton;
+Button* closeButton;
+Button* startGameButton;
+Button* rollDiceButton;
+Button* buyPropertyButton;
+Button* nextButton;
 
-std::vector<sf::Color>& Globals::getPlayerColors()
-{
-    return colors;
-}
+std::vector<Button*> outlineColorHoverButtons;
+std::vector<Button*> spriteColorHoverButtons;
 
-Globals::GameState& Globals::getCurrentState()
-{
-    return currentState;
-}
+UIText* rollDiceResultText;
+UIText* gameOverText;
+UIText* gameOverPlayingTimeText;
+UIText* inGameClockText;
 
-void Globals::setCurrentState(Globals::GameState currentStateParam)
-{
-    currentState = currentStateParam;
-}
+sf::Clock* playingTimeClock = new sf::Clock();
 
-Button* Globals::getRollDiceButton()
-{
-    return rollDiceButton;
-}
+std::vector<UIText*> leaderBoardNameTexts;
 
-void Globals::setRollDiceButton(Button* rollDiceButtonParam)
-{
-    rollDiceButton = rollDiceButtonParam;
-}
+UISprite* closeButtonUISpritePlayerCountSelectionMenu;
+UISprite* tutorialButtonUISprite;
 
-Button* Globals::getBuyPropertyButton()
-{
-    return buyPropertyButton;
-}
+std::vector<Player*> players;
+std::vector<Player*> playersInWinningOrder;
 
-void Globals::setBuyPropertyButton(Button* buyPropertyButtonParam)
+std::vector<District> districts
 {
-    buyPropertyButton = buyPropertyButtonParam;
-}
+    District("Centru", sf::Color::White),
+    District("Bartolomeu", sf::Color::White),
+    District("Astra", sf::Color::White),
+    District("Tractorul", sf::Color::White),
+    District("Centrul nou", sf::Color::White),
+    District("Ragadau", sf::Color::White),
+    District("Poiana", sf::Color::White),
+    District("Noua", sf::Color::White),
+    District("Darste", sf::Color::White)
+};
 
-Button* Globals::getNextButton()
+std::vector<Location*> locations
 {
-    return nextButton;
-}
+    new Start(),
 
-void Globals::setNextButton(Button* nextButtonParam)
-{
-    nextButton = nextButtonParam;
-}
+    new Property("Piata Sfatului", districts[0], 5000),
+    new Property("Livada Postei", districts[0], 4500),
+    new Property("Primaria", districts[0], 3900),
 
-Button* Globals::getBuyHouseButton()
-{
-    return buyHouseButton;
-}
+    new Property("Gara Bartolomenu", districts[1], 100),
+    new Property("Biserica Bartolomeu", districts[1], 400),
+    new Property("Hornbach", districts[1], 50),
 
-void Globals::setBuyHouseButton(Button* buyHouseButtonParam)
-{
-    buyHouseButton = buyHouseButtonParam;
-}
+    new Property("Piata Astra", districts[2], 900),
+    new Property("Berzei", districts[2], 1000),
+    new Property("Lidl", districts[2], 1200),
 
-std::vector<Button*>& Globals::getOutlineColorHoverButtons()
-{
-    return outlineColorHoverButtons;
-}
+    new Property("Coresi", districts[3], 2200),
+    new Property("Gara", districts[3], 400),
+    new Property("Kronwell", districts[3], 500),
 
-void Globals::setOutlineColorHoverButtons(std::vector<Button*>& outlineColorHoverButtonsParam)
-{
-    outlineColorHoverButtons = outlineColorHoverButtonsParam;
-}
+    new Property("AFI", districts[4], 3300),
+    new Property("eMAG", districts[4], 3100),
+    new Property("Spitalul Judetean", districts[4], 2900),
 
-std::vector<Button*>& Globals::getSpriteColorHoverButtons()
-{
-    return spriteColorHoverButtons;
-}
+    new Property("Dealul Melcilor", districts[5], 1200),
+    new Property("Decathlon", districts[5], 900),
 
-void Globals::setSpriteColorHoverButtons(std::vector<Button*>& spriteColorHoverButtonsParam)
-{
-    spriteColorHoverButtons = spriteColorHoverButtonsParam;
-}
+    new Property("Postavarul", districts[6], 3500),
+    new Property("Belvedere", districts[6], 4500),
 
-UIText* Globals::getRollDiceResultText()
-{
-    return rollDiceResultText;
-}
+    new Property("Gradina Zoologica", districts[7], 1200),
+    new Property("Lacul Noua", districts[7], 1500),
 
-void Globals::setRollDiceResultText(UIText* rollDiceResultTextParam)
-{
-    rollDiceResultText = rollDiceResultTextParam;
-}
+    new Property("Carrefour", districts[8], 1000),
+    new Property("Jumbo", districts[8], 600),
 
-UIText* Globals::getGameOverText()
-{
-    return gameOverText;
-}
+};
 
-void Globals::setGameOverText(UIText* gameOverTextParam)
+std::vector<sf::Color> colors =
 {
-    gameOverText = gameOverTextParam;
-}
+    {153, 101, 21}, // Brown
+    {1, 50, 32}, // Dark green
+    {255, 192, 203}, // Pink
+    {128, 0, 128}, // Purple
+    {255, 165, 0}, // Orange
+    {190, 207, 64}, // Yellow
+    {207, 64, 64}, // Red
+    {64, 88, 207}, // Blue
+    {144, 238, 144} // Light green
+};
 
-UIText* Globals::getGameOverPlayingTimeText()
-{
-    return gameOverPlayingTimeText;
-}
+std::vector<UIElement*> inGameSceneUIElementsThatMustBeDeleted;
 
-void Globals::setGameOverPlayingTimeText(UIText* gameOverPlayingTimeTextParam)
-{
-    gameOverPlayingTimeText = gameOverPlayingTimeTextParam;
-}
+std::vector<UIRectangleShape*> propertyColorSquares;
 
-UIText* Globals::getInGameClockText()
-{
-    return inGameClockText;
-}
-
-void Globals::setInGameClockText(UIText* inGameClockTextParam)
-{
-    inGameClockText = inGameClockTextParam;
-}
-
-sf::Clock* Globals::getPlayingTimeClock()
-{
-    return playingTimeClock;
-}
-
-void Globals::setPlayingTimeClock(sf::Clock* playingTimeClockParam)
-{
-    playingTimeClock = playingTimeClockParam;
-}
-
-std::vector<UIText*>& Globals::getLeaderBoardNameTexts()
-{
-    return leaderBoardNameTexts;
-}
-
-void Globals::setLeaderBoardNameTexts(std::vector<UIText*>& leaderBoardNameTextsParam)
-{
-    leaderBoardNameTexts = leaderBoardNameTextsParam;
-}
-
-UISprite* Globals::getCloseButtonUISpritePlayerCountSelectionMenu()
-{
-    return closeButtonUISpritePlayerCountSelectionMenu;
-}
-
-void Globals::setCloseButtonUISpritePlayerCountSelectionMenu(UISprite* closeButtonUISpritePlayerCountSelectionMenuParam)
-{
-    closeButtonUISpritePlayerCountSelectionMenu = closeButtonUISpritePlayerCountSelectionMenuParam;
-}
-
-UISprite* Globals::getTutorialButtonUISprite()
-{
-    return tutorialButtonUISprite;
-}
-
-void Globals::setTutorialButtonUISprite(UISprite* tutorialButtonUISpriteParam)
-{
-    tutorialButtonUISprite = tutorialButtonUISpriteParam;
-}
-
-std::vector<Player*>& Globals::getPlayers()
-{
-    return players;
-}
-
-void Globals::setPlayers(std::vector<Player*>& playersParam)
-{
-    players = playersParam;
-}
-
-std::vector<Player*>& Globals::getPlayersInWinningOrder()
-{
-    return playersInWinningOrder;
-}
-
-void Globals::setPlayersInWinningOrder(std::vector<Player*>& playersInWinningOrderParam)
-{
-    playersInWinningOrder = playersInWinningOrderParam;
-}
-
-std::vector<UIElement*>& Globals::getInGameSceneUIElementsThatMustBeDeleted()
-{
-    return inGameSceneUIElementsThatMustBeDeleted;
-}
-
-void Globals::setInGameSceneUIElementsThatMustBeDeleted(std::vector<UIElement*>& inGameSceneUIElementsThatMustBeDeletedParam)
-{
-    inGameSceneUIElementsThatMustBeDeleted = inGameSceneUIElementsThatMustBeDeletedParam;
-}
-
-std::vector<UIRectangleShape*>& Globals::getPropertyColorSquares()
-{
-    return propertyColorSquares;
-}
-
-void Globals::setPropertyColorSquares(std::vector<UIRectangleShape*>& propertyColorSquaresParam)
-{
-    propertyColorSquares = propertyColorSquaresParam;
-}
-
-Button* Globals::getTutorialButton()
-{
-    return tutorialButton;
-}
-
-Button* Globals::getCloseButton()
-{
-    return closeButton;
-}
-
-Button* Globals::getStartGameButton()
-{
-    return startGameButton;
-}
-
-void Globals::setCloseButton(Button* closeButtonParam)
-{
-    closeButton = closeButtonParam;
-}
-
-void Globals::setTutorialButton(Button* tutorialButtonParam)
-{
-    tutorialButton = tutorialButtonParam;
-}
-
-void Globals::setStartGameButton(Button* startGameButtonParam)
-{
-    startGameButton = startGameButtonParam;
-}
+GameState currentState = GameState::PlayerCountSelection;

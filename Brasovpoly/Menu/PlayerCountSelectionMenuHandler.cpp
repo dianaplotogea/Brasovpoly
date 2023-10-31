@@ -8,30 +8,41 @@
 #include "PlayerSetupMenuHandler.h"
 #include "../Globals.h"
 
+int maximumNumberOfPlayers = 6;
+int playerCountSelectionButtonInitialPositionY = 150;
+int playerCountSelectionButtonDistanceBetweenButtonsY = 100;
+int playerCountSelectionTextPositionY = 200;
+int playerCountSelectionTextCharacterSize = 30;
 
+int tutorialButtonPadding = 30;
+int tutorialButtonSize = 45;
 
-void PlayerCountSelectionMenuHandler::createPlayerCountSelectionMenu()
+std::vector<Button*> playerCountSelectionButtons;
+
+sf::Texture tutorialButtonTexture;
+
+void createPlayerCountSelectionMenu()
 {
-    UIText* playerCountSelectionText = new UIText(globals.getPlayerCountSelectionMenu(), globals.getGlobalFont(), playerCountSelectionTextCharacterSize, "Select the number of players:");
-    playerCountSelectionText->setPosition(sf::Vector2f(Globals::windowWidth/2 - playerCountSelectionText->getLocalBounds().width/2, playerCountSelectionTextPositionY));
+    UIText* playerCountSelectionText = new UIText(playerCountSelectionMenu, &font, playerCountSelectionTextCharacterSize, "Select the number of players:");
+    playerCountSelectionText->setPosition(sf::Vector2f(windowWidth/2 - playerCountSelectionText->getLocalBounds().width/2, playerCountSelectionTextPositionY));
 
     for(int i=2;i<maximumNumberOfPlayers+1;i++)
     {
         Button* numberOfPlayersSelectionButton = new Button
         (
-            globals.getPlayerCountSelectionMenu(),
-            Globals::windowWidth/2 - Globals::buttonWidth/2,
+            playerCountSelectionMenu,
+            windowWidth/2 - buttonWidth/2,
             playerCountSelectionButtonInitialPositionY + i*playerCountSelectionButtonDistanceBetweenButtonsY,
-            Globals::buttonWidth,
-            Globals::buttonHeight,
-            globals.getGlobalFont(),
+            buttonWidth,
+            buttonHeight,
+            &font,
             std::to_string(i),
-            globals.getButtonColor(),
-            Globals::buttonBorderThickness,
-            globals.getButtonBorderColor()
+            buttonColor,
+            buttonBorderThickness,
+            buttonBorderColor
         );
         playerCountSelectionButtons.push_back(numberOfPlayersSelectionButton);
-        globals.getOutlineColorHoverButtons().push_back(numberOfPlayersSelectionButton);
+        outlineColorHoverButtons.push_back(numberOfPlayersSelectionButton);
     }
 
     if(!tutorialButtonTexture.loadFromFile("Assets/Tutorial.png"))
@@ -39,21 +50,20 @@ void PlayerCountSelectionMenuHandler::createPlayerCountSelectionMenu()
         std::cerr << "Failed to load image" << std::endl;
     }
 
-    globals.setTutorialButton(new Button(globals.getPlayerCountSelectionMenu(), Globals::windowWidth - tutorialButtonPadding - tutorialButtonSize, tutorialButtonPadding, tutorialButtonSize, tutorialButtonSize ));
-    globals.setTutorialButtonUISprite(new UISprite(globals.getPlayerCountSelectionMenu(), &tutorialButtonTexture, sf::Vector2f(Globals::windowWidth - tutorialButtonPadding - tutorialButtonSize, tutorialButtonPadding), sf::Vector2f(tutorialButtonSize, tutorialButtonSize) ));
-    globals.getTutorialButton()->setUiSprite(globals.getTutorialButtonUISprite());
-    globals.getSpriteColorHoverButtons().push_back(globals.getTutorialButton());
+    tutorialButton = new Button(playerCountSelectionMenu, windowWidth - tutorialButtonPadding - tutorialButtonSize, tutorialButtonPadding, tutorialButtonSize, tutorialButtonSize );
+    tutorialButtonUISprite = new UISprite(playerCountSelectionMenu, &tutorialButtonTexture, sf::Vector2f(windowWidth - tutorialButtonPadding - tutorialButtonSize, tutorialButtonPadding), sf::Vector2f(tutorialButtonSize, tutorialButtonSize)  );
+    tutorialButton->uiSprite = tutorialButtonUISprite;
+    spriteColorHoverButtons.push_back(tutorialButton);
 }
 
-void PlayerCountSelectionMenuHandler::playerCountSelectionButtonsEventHandler(sf::RenderWindow& window)
+void playerCountSelectionButtonsEventHandler(sf::RenderWindow& window)
 {
     for(int i=0;i<playerCountSelectionButtons.size();i++)
     {
         if(playerCountSelectionButtons[i]->isMouseOver(window))
         {
-            globals.getPlayerCountSelectionMenu().hideAll();
-            PlayerSetupMenuHandler playerSetupMenuHandler;
-            playerSetupMenuHandler.createPlayerSetupMenu(i+1);
+            playerCountSelectionMenu.hideAll();
+            createPlayerSetupMenu(i+1);
         }
     }
 }
